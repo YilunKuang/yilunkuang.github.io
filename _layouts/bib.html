@@ -116,9 +116,9 @@
         {% if entry.type == "article" -%}
           {%- capture journal_full -%}{{ entry.journal }}{%- endcapture -%}
           {%- capture journal_main -%}{{ journal_full | split: ' (' | first }}{%- endcapture -%}
-          {%- capture journal_abbr -%}{{ journal_full | split: ' (' | last | remove: ')' }}{%- endcapture -%}
+          {%- capture journal_abbr -%}{{ journal_full | split: ' (' | last | remove: ')' | remove: '(' | strip }}{%- endcapture -%}
           {%- capture entrytype -%}
-            <em>{{ journal_main }}</em> <strong>{{ journal_abbr }}</strong>
+            <em>{{ journal_main }}</em> <strong>({{ journal_abbr }})</strong>
           {%- endcapture -%}
         {%- elsif proceedings contains entry.type -%}
           {%- capture entrytype -%}<em>In {{ entry.booktitle }}</em> {%- endcapture -%}
