@@ -2,28 +2,28 @@
 ---
 
 
-@inproceedings{
-    yerxa2023learning,
-    title = {Learning Efficient Coding of Natural Images with Maximum Manifold Capacity Representations},
-    author = {Thomas Yerxa, Yilun Kuang, Eero Simoncelli, SueYeon Chung},
-    booktitle = {Neural Information Processing Systems},
-    booktitle_show = {Neural Information Processing Systems},
-    booktitle_abbr = {NeurIPS},
-    year = {2023},
-    bibtex_show = {true},
-    selected = {true},
-    placeholder = {},
-}
 
 
-@inproceedings{lotfi2024nonvacuous,
+@article{lotfi2024nonvacuous,
     title={Non-Vacuous Generalization Bounds for Large Language Models}, 
     author={Sanae Lotfi, Marc Finzi, Yilun Kuang, Tim G. J. Rudner, Micah Goldblum, Andrew Gordon Wilson},
-    booktitle = {International Conference on Machine Learning},
-    booktitle_show = {International Conference on Machine Learning},
-    booktitle_abbr = {ICML},
+    journal = {International Conference on Machine Learning},
+    selected = {true},
     year={2024},
     bibtex_show = {true},
+    abstract={Modern language models can contain billions of parameters, raising the question of whether they can generalize beyond the training data or simply regurgitate their training corpora. We provide the first non-vacuous generalization bounds for pretrained large language models (LLMs), indicating that language models are capable of discovering regularities that generalize to unseen data. In particular, we derive a compression bound that is valid for the unbounded log-likelihood loss using prediction smoothing, and we extend the bound to handle subsampling, accelerating bound computation on massive datasets. To achieve the extreme level of compression required for non-vacuous generalization bounds, we devise SubLoRA, a low-dimensional non-linear parameterization. Using this approach, we find that larger models have better generalization bounds and are more compressible than smaller models.},
+    preview={doc_bounds.png},
+    html={https://arxiv.org/abs/2312.17173},
+}
+
+@article{yerxa2023learning,
+    title = {Learning Efficient Coding of Natural Images with Maximum Manifold Capacity Representations},
+    author = {Thomas Yerxa, Yilun Kuang, Eero Simoncelli, SueYeon Chung},
+    journal = {Neural Information Processing Systems},
     selected = {true},
-    placeholder = {},
+    year = {2023},
+    bibtex_show = {true},
+    abstract={The efficient coding hypothesis proposes that the response properties of sensory systems are adapted to the statistics of their inputs such that they capture maximal information about the environment, subject to biological constraints. While elegant, information theoretic properties are notoriously difficult to measure in practical settings or to employ as objective functions in optimization. This difficulty has necessitated that computational models designed to test the hypothesis employ several different information metrics ranging from approximations and lower bounds to proxy measures like reconstruction error. Recent theoretical advances have characterized a novel and ecologically relevant efficiency metric, the manifold capacity, which is the number of object categories that may be represented in a linearly separable fashion. However, calculating manifold capacity is a computationally intensive iterative procedure that until now has precluded its use as an objective. Here we outline the simplifying assumptions that allow manifold capacity to be optimized directly, yielding Maximum Manifold Capacity Representations (MMCR). The resulting method is closely related to and inspired by advances in the field of self supervised learning (SSL), and we demonstrate that MMCRs are competitive with state of the art results on standard SSL benchmarks. Empirical analyses reveal differences between MMCRs and representations learned by other SSL frameworks, and suggest a mechanism by which manifold compression gives rise to class separability. Finally we evaluate a set of SSL methods on a suite of neural predictivity benchmarks, and find MMCRs are higly competitive as models of the ventral stream.},
+    preview={mmcr.png},
+    html={https://arxiv.org/abs/2303.03307},
 }
