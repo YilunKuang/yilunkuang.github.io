@@ -1,6 +1,6 @@
 ---
 layout: about
-title: about
+title: About
 permalink: /
 subtitle: PhD Student in Machine Learning, Center for Data Science, New York University.
 
@@ -10,7 +10,7 @@ profile:
   image: prof_pic.jpg
   image_circular: false # crops the image to make it circular
   more_info: >
-    <p>yilun.kuang [at] nyu.edu</p>
+    
 
 news: false  # includes a list of news items
 latest_posts: false  # includes a list of the newest posts
