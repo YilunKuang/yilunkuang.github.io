@@ -1,6 +1,17 @@
 ---
 ---
 
+@article{lotfi2024tokenbounds,
+    title={Unlocking Tokens as Data Points for Generalization Bounds on Larger Language Models}, 
+    author={Lotfi*, Sanae and Kuang*, Yilun and Finzi*, Marc and Amos, Brandon and Goldblum, Micah and Wilson, Andrew Gordon},
+    journal = {ICML Workshop on Theoretical Foundations of Foundation Models (ICML Workshop)},
+    selected = {true},
+    year={2024},
+    bibtex_show = {true},
+    abstract={Large language models (LLMs) with billions of parameters excel at predicting the next token in a sequence. Recent work computes non-vacuous compression-based generalization bounds for LLMs, but these bounds are vacuous for large models at the billion-parameter scale. Moreover, these bounds are obtained through restrictive compression techniques, bounding compressed models that generate low-quality text. Additionally, the tightness of these existing bounds depends on the number of IID documents in a training set rather than the much larger number of non-IID constituent tokens, leaving untapped potential for tighter bounds. In this work, we instead use properties of martingales to derive generalization bounds that benefit from the vast number of tokens in LLM training sets. Since a dataset contains far more tokens than documents, our generalization bounds not only tolerate but actually benefit from far less restrictive compression schemes. With Monarch matrices, Kronecker factorizations, and post-training quantization, we achieve non-vacuous generalization bounds for LLMs as large as LLaMA2-70B. Unlike previous approaches, our work achieves the first non-vacuous bounds for models that are deployed in practice and generate high-quality text.},
+    preview={token_bounds.png},
+    html={https://arxiv.org/abs/2312.17173},
+}
 
 @article{lotfi2024nonvacuous,
     title={Non-Vacuous Generalization Bounds for Large Language Models}, 
@@ -14,6 +25,17 @@
     html={https://arxiv.org/abs/2312.17173},
 }
 
+@article{ligeralde2023unsupervised,
+      title={Unsupervised Learning on Spontaneous Retinal Activity Leads to Efficient Neural Representation Geometry}, 
+      author={Ligeralde*, Andrew and Kuang*, Yilun and Yerxa, Thomas and N. Pitcher, Miah and Feller, Marla and Chung, SueYeon},
+      journal = {NeurIPS Workshop on Unifying Representations in Neural Models (NeurIPS Workshop)},
+      selected = {true},
+      year={2023},
+      bibtex_show = {true},
+      abstract={Prior to the onset of vision, neurons in the developing mammalian retina spontaneously fire in correlated activity patterns known as retinal waves. Experimental evidence suggests that retinal waves strongly influence the emergence of sensory representations before visual experience. We aim to model this early stage of functional development by using movies of neurally active developing retinas as pre-training data for neural networks. Specifically, we pre-train a ResNet-18 with an unsupervised contrastive learning objective (SimCLR) on both simulated and experimentally-obtained movies of retinal waves, then evaluate its performance on image classification tasks. We find that pre-training on retinal waves significantly improves performance on tasks that test object invariance to spatial translation, while slightly improving performance on more complex tasks like image classification. Notably, these performance boosts are realized on held-out natural images even though the pre-training procedure does not include any natural image data. We then propose a geometrical explanation for the increase in network performance, namely that the spatiotemporal characteristics of retinal waves facilitate the formation of separable feature representations. In particular, we demonstrate that networks pre-trained on retinal waves are more effective at separating image manifolds than randomly initialized networks, especially for manifolds defined by sets of spatial translations. These findings indicate that the broad spatiotemporal properties of retinal waves prepare networks for higher order feature extraction.},
+      preview={retinal_waves.png},
+      html={https://arxiv.org/abs/2312.02791},
+}
 @article{yerxa2023learning,
     title = {Learning Efficient Coding of Natural Images with Maximum Manifold Capacity Representations},
     author = {Yerxa, Thomas and Kuang, Yilun and Simoncelli, Eero and Chung, SueYeon},
