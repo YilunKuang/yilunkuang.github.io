@@ -119,20 +119,6 @@
           {%- capture journal_abbr -%}{{ journal_full | split: ' (' | last | remove: ')' | remove: '(' | strip }}{%- endcapture -%}
           {%- capture entrytype -%}
             <em>{{ journal_main }}</em> <strong>({{ journal_abbr }})</strong>
-          {%- endcapture -%}
-        {%- elsif proceedings contains entry.type -%}
-          {%- capture entrytype -%}<em>In {{ entry.booktitle }}</em> {%- endcapture -%}
-        {%- elsif thesis contains entry.type -%}
-          {%- capture entrytype -%}<em>{{ entry.school }}</em> {%- endcapture -%}
-        {%- else -%}
-          {%- capture entrytype -%}{%- endcapture -%}
-        {%- endif -%} -->
-        {% if entry.type == "article" -%}
-          {%- capture journal_full -%}{{ entry.journal }}{%- endcapture -%}
-          {%- capture journal_main -%}{{ journal_full | split: ' (' | first }}{%- endcapture -%}
-          {%- capture journal_abbr -%}{{ journal_full | split: ' (' | last | remove: ')' | remove: '(' | strip }}{%- endcapture -%}
-          {%- capture entrytype -%}
-            <em>{{ journal_main }}</em> <strong>({{ journal_abbr }})</strong>
             {%- if entry.oral == "true" -%}
               <span style="color: red; font-weight: bold;"> Oral</span>
             {%- endif -%}
@@ -156,6 +142,77 @@
         {%- capture periodical -%}{{ entrytype }}{%- if entrytype_text != "" and entryyear != "" -%}, {%- endif -%}{{ entrymonth }}{{ entryyear }}{%- endcapture -%}
         <div class="periodical">
           {{ periodical | strip }}
+        </div>
+        <div class="periodical">
+          {{ entry.note | strip }}
+        </div> -->
+        {% if entry.type == "article" -%}
+          {%- capture journal_full -%}{{ entry.journal }}{%- endcapture -%}
+          {%- assign journals = journal_full | split: ';' -%}
+          {%- capture entrytype -%}
+            {%- for journal in journals -%}
+              {%- assign journal_parts = journal | split: ',' -%}
+              {%- capture journal_name -%}{{ journal_parts[0] }}{%- endcapture -%}
+              {%- capture journal_year -%}{{ journal_parts[1] | strip }}{%- endcapture -%}
+              {%- capture journal_main -%}{{ journal_name | split: ' (' | first }}{%- endcapture -%}
+              {%- capture journal_abbr -%}{{ journal_name | split: ' (' | last | remove: ')' | remove: '(' | strip }}{%- endcapture -%}
+              <em>{{ journal_main }}</em> <strong>({{ journal_abbr }})</strong>
+              {%- if journal_year != "" -%}, {{ journal_year }}{%- endif -%}
+              {%- if entry.oral == "true" -%}
+                <span style="color: red; font-weight: bold;"> Oral</span>
+              {%- endif -%}
+              {%- unless forloop.last -%}<br>{%- endunless -%}
+            {%- endfor -%}
+          {%- endcapture -%}
+        {% elsif proceedings contains entry.type -%}
+          {%- capture entrytype -%}
+            {%- assign journals = entry.booktitle | split: ';' -%}
+            {%- for journal in journals -%}
+              {%- assign journal_parts = journal | split: ',' -%}
+              {%- capture journal_name -%}{{ journal_parts[0] }}{%- endcapture -%}
+              {%- capture journal_year -%}{{ journal_parts[1] | strip }}{%- endcapture -%}
+              <em>In {{ journal_name }}</em>
+              {%- if journal_year != "" -%}, {{ journal_year }}{%- endif -%}
+              {%- if entry.oral == "true" -%}
+                <span style="color: red; font-weight: bold;"> Oral</span>
+              {%- endif -%}
+              {%- unless forloop.last -%}<br>{%- endunless -%}
+            {%- endfor -%}
+          {%- endcapture -%}
+        {% elsif thesis contains entry.type -%}
+          {%- capture entrytype -%}
+            {%- assign schools = entry.school | split: ';' -%}
+            {%- for school in schools -%}
+              {%- assign school_parts = school | split: ',' -%}
+              {%- capture school_name -%}{{ school_parts[0] }}{%- endcapture -%}
+              {%- capture school_year -%}{{ school_parts[1] | strip }}{%- endcapture -%}
+              <em>{{ school_name }}</em>
+              {%- if school_year != "" -%}, {{ school_year }}{%- endif -%}
+              {%- if entry.oral == "true" -%}
+                <span style="color: red; font-weight: bold;"> Oral</span>
+              {%- endif -%}
+              {%- unless forloop.last -%}<br>{%- endunless -%}
+            {%- endfor -%}
+          {%- endcapture -%}
+        {% else -%}
+          {%- capture entrytype -%}
+            {%- assign journals = entry.journal | split: ';' -%}
+            {%- for journal in journals -%}
+              {%- assign journal_parts = journal | split: ',' -%}
+              {%- capture journal_name -%}{{ journal_parts[0] }}{%- endcapture -%}
+              {%- capture journal_year -%}{{ journal_parts[1] | strip }}{%- endcapture -%}
+              <em>{{ journal_name }}</em>
+              {%- if journal_year != "" -%}, {{ journal_year }}{%- endif -%}
+              {%- if entry.oral == "true" -%}
+                <span style="color: red; font-weight: bold;"> Oral</span>
+              {%- endif -%}
+              {%- unless forloop.last -%}<br>{%- endunless -%}
+            {%- endfor -%}
+          {%- endcapture -%}
+        {% endif %}
+
+        <div class="periodical">
+          {{ entrytype | strip }}
         </div>
         <div class="periodical">
           {{ entry.note | strip }}
