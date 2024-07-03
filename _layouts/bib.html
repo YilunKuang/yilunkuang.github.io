@@ -113,7 +113,7 @@
         <!-- Journal/Book title and date -->
         {% assign proceedings = "inproceedings,incollection" | split: ',' %}
         {% assign thesis = "thesis,mastersthesis,phdthesis" | split: ',' %}
-        {% if entry.type == "article" -%}
+        <!-- {% if entry.type == "article" -%}
           {%- capture journal_full -%}{{ entry.journal }}{%- endcapture -%}
           {%- capture journal_main -%}{{ journal_full | split: ' (' | first }}{%- endcapture -%}
           {%- capture journal_abbr -%}{{ journal_full | split: ' (' | last | remove: ')' | remove: '(' | strip }}{%- endcapture -%}
@@ -126,7 +126,26 @@
           {%- capture entrytype -%}<em>{{ entry.school }}</em> {%- endcapture -%}
         {%- else -%}
           {%- capture entrytype -%}{%- endcapture -%}
-        {%- endif -%}
+        {%- endif -%} -->
+        {% if entry.type == "article" -%}
+          {%- capture journal_full -%}{{ entry.journal }}{%- endcapture -%}
+          {%- capture journal_main -%}{{ journal_full | split: ' (' | first }}{%- endcapture -%}
+          {%- capture journal_abbr -%}{{ journal_full | split: ' (' | last | remove: ')' | remove: '(' | strip }}{%- endcapture -%}
+          {%- capture entrytype -%}
+            <em>{{ journal_main }}</em> <strong>({{ journal_abbr }})</strong>
+            {%- if entry.oral == "true" -%}
+              <span style="color: red; font-weight: bold;"> Oral</span>
+            {%- endif -%}
+          {%- endcapture -%}
+        {% elsif proceedings contains entry.type -%}
+          {%- capture entrytype -%}<em>In {{ entry.booktitle }}</em> 
+          {%- if entry.oral == "true" -%}<span style="color: red; font-weight: bold;"> Oral</span>{%- endif -%}{%- endcapture -%}
+        {% elsif thesis contains entry.type -%}
+          {%- capture entrytype -%}<em>{{ entry.school }}</em> 
+          {%- if entry.oral == "true" -%}<span style="color: red; font-weight: bold;"> Oral</span>{%- endif -%}{%- endcapture -%}
+        {% else -%}
+          {%- capture entrytype -%}{%- if entry.oral == "true" -%}<span style="color: red; font-weight: bold;"> Oral</span>{%- endif -%}{%- endcapture -%}
+        {% endif %}
         {% if entry.month -%}
           {%- capture entrymonth -%}{{ " " }}{{ entry.month | capitalize }}{%- endcapture -%}
         {% endif -%}
