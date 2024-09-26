@@ -125,15 +125,24 @@
               {%- capture journal_abbr -%}{{ journal_name | split: ' (' | last | remove: ')' | remove: '(' | strip }}{%- endcapture -%}
               <em>{{ journal_main }}</em> <strong>({{ journal_abbr }})</strong>
               {%- if journal_year != "" -%}, {{ journal_year }}{%- endif -%}
-              {%- if entry.oral == "true" -%}
+              <!-- {%- if entry.oral == "true" -%}
                 <span style="color: red; font-weight: bold;"> Oral</span>
               {%- endif -%}
               {%- if entry.bestpaper == "true" -%}
                 <span style="color: red; font-weight: bold;"> Best Paper Award</span>
+              {%- endif -%} -->
+              {%- if entry.spotlight == "true" and journal_name contains "NeurIPS" -%}
+                <span style="color: red; font-weight: bold;"> Spotlight</span>
               {%- endif -%}
+
+              {%- if entry.bestpaper == "true" and journal_name contains "ICML Workshop" -%}
+                <span style="color: red; font-weight: bold;"> Best Paper Award</span>
+              {%- endif -%}
+
               {%- unless forloop.last -%}<br>{%- endunless -%}
             {%- endfor -%}
           {%- endcapture -%}
+
         {% elsif proceedings contains entry.type -%}
           {%- capture entrytype -%}
             {%- assign journals = entry.booktitle | split: ';' -%}
