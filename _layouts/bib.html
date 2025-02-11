@@ -135,6 +135,10 @@
                 <span style="color: red; font-weight: bold;"> Spotlight</span>
               {%- endif -%}
 
+              {%- if entry.spotlight == "true" and journal_name contains "ICLR" -%}
+                <span style="color: red; font-weight: bold;"> Spotlight</span>
+              {%- endif -%}
+
               {%- if entry.bestpaper == "true" and journal_name contains "ICML Workshop" -%}
                 <span style="color: red; font-weight: bold;"> Best Paper Award</span>
               {%- endif -%}
