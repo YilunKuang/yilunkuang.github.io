@@ -18,7 +18,7 @@ selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true  # includes social icons at the bottom of the page
 ---
 
-I am Yilun Kuang, a second-year PhD student in Data Science at [NYU CDS](https://cds.nyu.edu/) & [NYU CILVR Lab](https://wp.nyu.edu/cilvr/). My research interests includes Large Language Models, Diffusion Models, Self-Supervised Learning, Multimodal Vision-Language Learning, Probabilistic Generative Models, NeuroAI & AI for Science, ML Systems.
+I am Yilun Kuang, a second-year PhD student in Data Science at [NYU CDS](https://cds.nyu.edu/) & [NYU CILVR Lab](https://wp.nyu.edu/cilvr/) working with Prof. [Yann LeCun](http://yann.lecun.com/). My research interests includes Large Language Models, Diffusion Models, Self-Supervised Learning, Multimodal Vision-Language Learning, Probabilistic Generative Models, NeuroAI & AI for Science, ML Systems.
 
 Prior to starting PhD, I graduated magna cum laude with high honors from NYU with a BA in Mathematics. I was fortunate to work with [SueYeon Chung](https://sites.google.com/site/sueyeonchung/) and [Eero Simoncelli](http://www.cns.nyu.edu/~eero/) on manifold geometry/efficient coding inspired self-supervised learning at the [Center for Computational Neuroscience of Flatiron Institute, Simons Foundation](https://www.simonsfoundation.org/people/yilun-kuang/).
 
