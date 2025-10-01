@@ -131,7 +131,26 @@
               {%- if entry.bestpaper == "true" -%}
                 <span style="color: red; font-weight: bold;"> Best Paper Award</span>
               {%- endif -%} -->
-              {%- if entry.spotlight == "true" and journal_name contains "NeurIPS" -%}
+              {%- comment -%}
+              Handle special case: NeurIPS Spotlight + Outstanding Poster Award
+              {%- endcomment -%}
+              {%- if entry.spotlight == "true" and entry.outstandingposter == "true" and journal_name contains "NeurIPS" -%}
+                <span style="font-weight: bold;">
+                  <span style="color: red;">Spotlight</span>
+                  <span style="color: red;"> &amp; </span>
+                  <span style="color: red;">Outstanding Poster Award</span>
+                </span>
+              {%- elsif entry.spotlight == "true" and journal_name contains "NeurIPS" -%}
+                <span style="color: red; font-weight: bold;"> Spotlight</span>
+              {%- elsif entry.spotlight == "true" and journal_name contains "ICLR" -%}
+                <span style="color: red; font-weight: bold;"> Spotlight</span>
+              {%- endif -%}
+              
+              {%- if entry.bestpaper == "true" and journal_name contains "ICML Workshop" -%}
+                <span style="color: red; font-weight: bold;"> Best Paper Award</span>
+              {%- endif -%}
+              
+              <!-- {%- if entry.spotlight == "true" and journal_name contains "NeurIPS" -%}
                 <span style="color: red; font-weight: bold;"> Spotlight</span>
               {%- endif -%}
 
@@ -141,8 +160,9 @@
 
               {%- if entry.bestpaper == "true" and journal_name contains "ICML Workshop" -%}
                 <span style="color: red; font-weight: bold;"> Best Paper Award</span>
-              {%- endif -%}
+              {%- endif -%} -->
 
+                          
               {%- unless forloop.last -%}<br>{%- endunless -%}
             {%- endfor -%}
           {%- endcapture -%}
