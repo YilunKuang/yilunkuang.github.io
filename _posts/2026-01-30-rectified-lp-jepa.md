@@ -80,9 +80,9 @@ where $$\mathbf{z}' = f_{\boldsymbol{\theta}}(\mathbf{x}')$$. By enforcing agree
 
 ## Distribution-Matching Regularization
 
-Simply minimizing the $$\ell_2$$ distance (Eq. (2)) between views, however, can lead to the problem of **feature collapse**. In the extreme case, the network can map every input to the same vector, resulting in **complete collapse**. Eq. (2) is perfectly minimized, but the representation is useless—it cannot distinguish between different inputs. More subtle forms of collapse also occur, such as **dimensional collapse**, where different feature dimensions encode redundant information <d-cite key="jing2022understandingdimensionalcollapsecontrastive"></d-cite>.
+Simply minimizing the $$\ell_2$$ distance (Eq. (2)) between views, however, can lead to the problem of **feature collapse**. In the extreme case, the network can map every input to the same vector, resulting in **complete collapse**. Eq. (2) is perfectly minimized, but the representation is useless as it cannot distinguish between different inputs. More subtle forms of collapse also occur, such as **dimensional collapse**, where different feature dimensions encode redundant information <d-cite key="jing2022understandingdimensionalcollapsecontrastive"></d-cite>.
 
-The goal of self-supervised learning is therefore to enforce invariance across views while maximally spreading feature vectors in the ambient space. One effective way to do this is to regularize the feature distributions $$\mathbb{P}_{\mathbf{z}}$$ and $$\mathbb{P}_{\mathbf{z}'}$$ towards a carefully chosen target distribution $$Q$$, which explicitly encodes desirable properties such as dispersion and diversity across feature dimensions. Thus the self-supervised learning objective in Eq. (2) can be augmented as
+The goal of self-supervised learning is therefore to enforce invariance across views while maximally spreading feature vectors in the ambient space. One effective way to do this is to regularize the feature distributions $$\mathbb{P}_{\mathbf{z}}$$ and $$\mathbb{P}_{\mathbf{z}'}$$ towards a carefully chosen **target distribution** $$Q$$, which explicitly encodes desirable properties such as dispersion and diversity across feature dimensions. Thus the self-supervised learning objective in Eq. (2) can be augmented as
 
 $$
 \begin{align}
@@ -91,13 +91,45 @@ $$
 \end{align}
 $$
 
-where $$\mathcal{L}(\cdot\|\cdot)$$ is any distribution-matching loss that's minimized when the two distributions are identical. In the next section, we discuss what are the choices of $$Q$$ which encourages maximally spread-out and diverse features. 
+where $$\mathcal{L}(\cdot\|\cdot)$$ is any distribution-matching loss that's minimized when the two distributions are identical.
+
+Naively, one can consider the KL divergence $$D_{\operatorname{KL}}(\mathbb{P}_{\mathbf{z}}\|Q)$$ with the Monte-Carlo estimate:
+$$
+\begin{align}
+D_{\operatorname{KL}}(\mathbb{P}_{\mathbf{z}}\|Q) = \int\log\frac{d\mathbb{P}_{\mathbf{z}}(x)}{dQ(x)}d\mathbb{P}_{\mathbf{z}}(x)\approx \frac{1}{B}\sum_{i=1}^{B}\log\frac{p_{\mathbf{z}}(\mathbf{z}_i)}{q(\mathbf{z}_i)}
+\end{align}
+$$
+However, directly performing distribution-matching in high dimensional space suffers from the **curse of dimensionality**: density estimations are intractable and we require exponential number of samples in dimensions. Thus we resort to a family of method based on the Cramer-Wold theorem <d-cite key="cramer1936"></d-cite> <d-cite key="wold1938"></d-cite>.
+
+The **Cramér–Wold theorem** states that two random vectors $$\mathbf{x},\mathbf{y}\in\mathbb{R}^d$$ are equal in distribution if and only if all their one-dimensional linear projections are equal in distribution.
+
+$$
+\begin{align}
+    \mathbf{x}\stackrel{\operatorname{d}}{=}\mathbf{y}\iff \mathbf{c}^\top\mathbf{x}\stackrel{\operatorname{d}}{=}\mathbf{c}^\top\mathbf{y}\text{ for all }\mathbf{c}\in\mathbb{R}^d
+\end{align}
+$$
+
+where the superscript $$\operatorname{d}$$ above the equal sign denotes equality in distribution. This result enables us to decompose a high-dimensional distribution matching problem into parallelized one-dimension optimizations under many different projections induced by $$\mathbf{c}$$, which significantly reduces the sample complexity in each of the one-dimensional problems. 
+
+With the Cramér–Wold theorem, Eq. (3) can be updated as 
+
+$$
+\begin{align}
+\min_{\boldsymbol{\theta}}\|\mathbf{z}-\mathbf{z}'\|_2+\mathbb{E}_{\mathbf{c}}[\mathcal{L}(\mathbb{P}_{\mathbf{c}^\top\mathbf{z}}\|\mathbb{P}_{\mathbf{c}^\top\mathbf{y}})]+\mathbb{E}_{\mathbf{c}}[\mathcal{L}(\mathbb{P}_{\mathbf{c}^\top\mathbf{z}'}\|\mathbb{P}_{\mathbf{c}^\top\mathbf{y}})]
+\tag{4}
+\end{align}
+$$
+
+where $$\mathbf{y}\sim Q$$ and $$\mathbf{c}^\top\mathbf{y}\sim\mathbb{P}_{\mathbf{c}^\top\mathbf{y}}$$ denotes the distribution of the projected targets. Thus we have converted a high-dimensional distribution matching problem into an expectation over univariate distribution-matching objectives. Even if Cramér–Wold theorem guarantees convergence under asymptotic number of projection vectors, in practice we only need finite projections and LeJEPA <d-cite key="balestriero2025lejepaprovablescalableselfsupervised"></d-cite> further shows that we only need to sample the projection vectors $$\mathbf{c}$$ from the unit $$\ell_2$$ sphere $$\mathbb{S}^{d-1}_{\ell_2}:=\{\mathbf{x}\in\mathbb{R}^{d}\mid\|\mathbf{x}\|_2=1\}$$.
+
+
+In the next section, we discuss what are the choices of $$Q$$ which encourages maximally spread-out and diverse features. 
 
 ## Target Distributions
 
 ### Isotropic Gaussian Distributions
 
-One natural target distribtuion is the **isotropic Gaussian** $$\mathcal{N}(\mathbf{0},\mathbf{I}_{d})$$ <d-cite key="kuang2025radialvcreg"></d-cite> <d-cite key="balestriero2025lejepaprovablescalableselfsupervised"></d-cite>. 
+One natural target distribtuion is the **isotropic Gaussian** $$\mathcal{N}(\mathbf{0},\mathbf{I}_{d})$$, which is used in LeJEPA <d-cite key="balestriero2025lejepaprovablescalableselfsupervised"></d-cite>.
 
 <!-- The goal of self-supervised learning is therefore to enforce invariance across views while maximally spreading feature vectors in the ambient space. One effective way to do this is to align the feature distributions towards an -->
 
@@ -266,13 +298,13 @@ where $$\Gamma(\cdot)$$ is the Gamm function and $$\mathbb{1}_{S}(z)$$ is the in
 
 ## Rectified Distribution Matching Regularization (RDMReg)
 
-After identifying the desirable target distribution $$Q$$, we would like to know how to find the appropriate distribution-matching loss $$\mathcal{L}(\cdot\|\cdot)$$ in Eq. (3). Naively, one can consider the KL divergence $$D_{\operatorname{KL}}(\mathbb{P}_{\mathbf{z}}\|Q)$$ with the Monte-Carlo estimate:
-$$
-\begin{align}
-D_{\operatorname{KL}}(\mathbb{P}_{\mathbf{z}}\|Q) = \int\log\frac{d\mathbb{P}_{\mathbf{z}}(x)}{dQ(x)}d\mathbb{P}_{\mathbf{z}}(x)\approx \frac{1}{B}\sum_{i=1}^{B}\log\frac{p_{\mathbf{z}}(\mathbf{z}_i)}{q(\mathbf{z}_i)}
-\end{align}
-$$
-However, directly performing distribution-matching in high dimensional space suffers from the **curse of dimensionality**: density estimations are intractable and we require exponential number of samples in dimensions. Thus we resort to a family of method based on the Cramer-Wold theorem.
+After identifying the desirable target distribution as the Rectified Generalized Gaussian family, we would like to regularize the neural network feature towards it using Eq. (4). 
+
+Contrary to the isotropic Gaussian, which is closed under linear combinations, the Rectified Generalized Gaussian (RGG) family is not preserved under linear projections: the one-dimensional projected marginals generally fall outside the RGG family. In fact, closure under linear combinations characterizes the class of multivariate stable distributions \citep{nolan1993multivariate}, which is disjoint from our RGG family. As illustrated in \cref{fig:ttt2}, while any linear projection of a Gaussian remains Gaussian, projecting a Rectified Gaussian along different directions yields distinctly different marginals that no longer belong to the Rectified Gaussian family.
+
+
+ <!-- know how to find the appropriate distribution-matching loss $$\mathcal{L}(\cdot\|\cdot)$$ in Eq. (3).  -->
+
 
 ## Rectified LpJEPA
 
