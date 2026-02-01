@@ -32,7 +32,6 @@ toc:
   - name: Product Laplace Distributions
   - name: Generalized Gaussian Distributions
   - name: Rectified Generalized Gaussian Distributions
-  - name: Rectified Generalized Gaussian
   - name: Rectified LpJEPA
 
 # Below is an example of injecting additional post-specific styles.
@@ -282,28 +281,6 @@ The Generalized Gaussian family is a well-known distribution, but we're not sati
 
 
 ## additional helper
-
-<div class="row mt-3">
-  <div class="col-sm mt-3 mt-md-0 text-center">
-    {% include figure.html
-       path="assets/img/rectified_lp_jepa/L2_sphere_full.png"
-       class="img-fluid rounded z-depth-1"
-       zoomable=true %}
-    <div class="caption">
-    Unit $\ell_2$ Sphere
-    </div>
-  </div>
-
-  <div class="col-sm mt-3 mt-md-0 text-center">
-    {% include figure.html
-       path="assets/img/rectified_lp_jepa/L1_sphere_full.png"
-       class="img-fluid rounded z-depth-1"
-       zoomable=true %}
-    <div class="caption">
-    Unit $\ell_1$ Sphere
-    </div>
-  </div>
-</div>
 
 
 You just need to surround your math expression with `$$`, like `$$ E = mc^2 $$`.
