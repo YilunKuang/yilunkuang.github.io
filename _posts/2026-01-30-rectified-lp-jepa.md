@@ -22,16 +22,15 @@ bibliography: 2026-01-30-rectified-lp-jepa.bib
 #   - we may want to automate TOC generation in the future using
 #     jekyll-toc plugin (https://github.com/toshimaru/jekyll-toc).
 toc:
-    # if a section has subsections, you can add them as follows:
-    # subsections:
-    #   - name: Example Child Subsection 1
-    #   - name: Example Child Subsection 2
-  - name: Introduction
   - name: Self-Supervised Learning
-  - name: Isotropic Gaussian Distributions
-  - name: Product Laplace Distributions
-  - name: Generalized Gaussian Distributions
-  - name: Rectified Generalized Gaussian Distributions
+  - name: Distribution-Matching Regularization
+  - name: Target Distributions
+    subsections:
+      - name: Isotropic Gaussian Distributions
+      - name: Product Laplace Distributions
+      - name: Generalized Gaussian Distributions
+      - name: Rectified Generalized Gaussian Distributions
+  - name: Rectified Distribution Matching Regularization (RDMReg)
   - name: Rectified LpJEPA
 
 # Below is an example of injecting additional post-specific styles.
@@ -54,23 +53,6 @@ _styles: >
 
 ---
 
-## Introduction
-
-
-gaussian. why gaussian, because it's maximum-entropy, and btw the angular distribution coincide with uniform distributions on the sphere, which is the ideal distribution. 
-
-
-Why Gaussian features are dense by construction
-
-Laplace distributions and the geometry of sparsity
-
-From special cases to a continuous spectrum
-
-Why rectification changes everything
-- intuition about rectifications
-
-Designing representation geometry via distribution matching
-
 ## Self-Supervised Learning
 
 Consider an input vector $\mathbf{x}$, such as an image, an audio clip, or a video frame. We would like to learn a neural network representation
@@ -81,7 +63,7 @@ $$
 \end{align}
 $$
 
-in the absence of any labeling information. Self-supervised learning makes this possible by creating supervision from the data itself. Given $\mathbf{x}$, we can generate another view $\mathbf{x}\'$ of the input $\mathbf{x}$ that preserves the same semantic content.
+in the absence of any labeling information. Self-supervised learning makes this possible by creating supervision from the data itself <d-cite key="balestriero2023cookbookselfsupervisedlearning"></d-cite>. Given $\mathbf{x}$, we can generate another view $\mathbf{x}\'$ of the input $\mathbf{x}$ that preserves the same semantic content.
 - For images, $\mathbf{x}\'$ might be a cropped, rotated, or even corrupted version of $\mathbf{x}$
 - For audio or video, $\mathbf{x}\'$ can be a nearby time segment or adjacent frame.
 
@@ -96,14 +78,30 @@ $$
 
 where $$\mathbf{z}' = f_{\boldsymbol{\theta}}(\mathbf{x}')$$. By enforcing agreement across many randomly generated views, the network learns features that are invariant to nuisance transformations and capture meaningful structure in the data.
 
-## Isotropic Gaussian Distributions
+## Distribution-Matching Regularization
 
 Simply minimizing the $$\ell_2$$ distance (Eq. (2)) between views, however, can lead to the problem of **feature collapse**. In the extreme case, the network can map every input to the same vector, resulting in **complete collapse**. Eq. (2) is perfectly minimized, but the representation is useless—it cannot distinguish between different inputs. More subtle forms of collapse also occur, such as **dimensional collapse**, where different feature dimensions encode redundant information <d-cite key="jing2022understandingdimensionalcollapsecontrastive"></d-cite>.
 
-The goal of self-supervised learning is therefore to enforce invariance across views while maximally spreading feature vectors in the ambient space. One effective way to do this is to align the feature distributions towards an **isotropic Gaussian** $$\mathcal{N}(\mathbf{0},\mathbf{I}_{d})$$, in addition to minimizing Eq. (2) <d-cite key="kuang2025radialvcreg"></d-cite> <d-cite key="balestriero2025lejepaprovablescalableselfsupervised"></d-cite>. 
+The goal of self-supervised learning is therefore to enforce invariance across views while maximally spreading feature vectors in the ambient space. One effective way to do this is to regularize the feature distributions $$\mathbb{P}_{\mathbf{z}}$$ and $$\mathbb{P}_{\mathbf{z}'}$$ towards a carefully chosen target distribution $$Q$$, which explicitly encodes desirable properties such as dispersion and diversity across feature dimensions. Thus the self-supervised learning objective in Eq. (2) can be augmented as
 
-<!-- The probability density function of an isotropic Gaussian random vector $$\mathbf{z}\sim\mathcal{N}(\mathbf{0}, \mathbf{I}_{d})$$ is  -->
+$$
+\begin{align}
+\min_{\boldsymbol{\theta}}\|\mathbf{z}-\mathbf{z}'\|_2+\mathcal{L}(\mathbb{P}_{\mathbf{z}}\|Q)+\mathcal{L}(\mathbb{P}_{\mathbf{z}'}\|Q)
+\tag{3}
+\end{align}
+$$
 
+where $$\mathcal{L}(\cdot\|\cdot)$$ is any distribution-matching loss that's minimized when the two distributions are identical. In the next section, we discuss what are the choices of $$Q$$ which encourages maximally spread-out and diverse features. 
+
+## Target Distributions
+
+### Isotropic Gaussian Distributions
+
+One natural target distribtuion is the **isotropic Gaussian** $$\mathcal{N}(\mathbf{0},\mathbf{I}_{d})$$ <d-cite key="kuang2025radialvcreg"></d-cite> <d-cite key="balestriero2025lejepaprovablescalableselfsupervised"></d-cite>. 
+
+<!-- The goal of self-supervised learning is therefore to enforce invariance across views while maximally spreading feature vectors in the ambient space. One effective way to do this is to align the feature distributions towards an -->
+
+<!-- in addition to minimizing Eq. (2) -->
 
 > ##### Probability Density Functions of Isotropic Gaussian
 >
@@ -128,7 +126,7 @@ This geometric behavior has a direct information-theoretic correspondence. Among
 TODO.
 {% enddetails %}
 
-## Product Laplace Distributions
+### Product Laplace Distributions
 
 While isotropic Gaussian regularization effectively prevents feature collapse, it inherently favors dense representations, where most feature dimensions are active. In contrast, extensive evidence from neuroscience, signal processing, and machine learning suggests that **sparse representations** are often more efficient and robust. Sparse coding plays a central role in compressed sensing and robust recovery, and biological neural systems are known to encode sensory inputs using non-negative, sparse activations under metabolic constraints. <span style="color:red;">TODO: add citations later.</span>
 
@@ -159,7 +157,7 @@ The other way to think about why Laplace induces sparsity is through the lens of
 TODO.
 {% enddetails %}
 
-## Generalized Gaussian Distributions
+### Generalized Gaussian Distributions
 
 We observe that both Laplace and Gaussian are maximum-entropy distributions over either expected $$\ell_1$$ amd $$\ell_2$$ norm constraints. Since the $$\ell_1$$-norm already promotes sparsity, a natural question is how much further can we go. 
 
@@ -169,7 +167,7 @@ More generally, $\ell_p$ **quasi-norms** with $0 < p < 1$ provide a closer appro
 
 <!-- More generally, $\ell_p$ quasi-norms $\|\mathbf{x}\|_p^p:=\sum_{i=1}^d|\mathbf{x}_i|^p$ with $0<p<1$ provide a closer, nonconvex approximation to $\ell_0$: their singular behavior near zero strongly favors exact sparsity while exerting weaker penalties on large-magnitude components. Although nonconvexity complicates optimization, such penalties have been shown to yield sparser and less biased solutions than $\ell_1$ under suitable conditions \citep{chartrand2007exact,chartrand2008iteratively}. -->
 
-Thus we would like to consider distributions with the $$\ell_p$$ quasi-norms constraints. In fact, the **maximum-entropy** distribution under the expected $$\ell_p$$-norm constraints is the **product Generalized Gaussian** distributions $$\prod_{i=1}^{d}\mathcal{GN}_p(\mu,\sigma)$$, of which product Laplace and isotropic Gaussian are special cases for $$p=1$$ and $$p=2$$ respectively.
+Thus we would like to consider distributions with the $$\ell_p$$ quasi-norms constraints. In fact, the **maximum-entropy** distribution under the expected $$\ell_p$$-norm constraints is the zero-mean **product Generalized Gaussian** distributions $$\prod_{i=1}^{d}\mathcal{GN}_p(\mu,\sigma)$$, of which product Laplace and isotropic Gaussian are special cases for $$p=1$$ and $$p=2$$ respectively.
 
 > ##### Probability Density Functions of Product Generalized Gaussian
 <!-- > Let $\space\mathbf{z}\sim\prod_{i=1}^{d}\mathcal{GN}_p(\mu,\sigma)$, then the density function is given by -->
@@ -219,27 +217,74 @@ Thus the angular directions of product Laplace and isotropic Gaussian are unifor
 
 Thus we can always regularizes our feature distributions towards the Generalized Gaussian Distributions $$\prod_{i=1}^{d}\mathcal{GN}_p(\mu,\sigma)$$ with $$0<p<1$$ for learning even sparser, axis-aligned representations while also preserving the maximum-entropy guarantee to prevent feature collapse.
 
-## Rectified Generalized Gaussian Distributions
+### Rectified Generalized Gaussian Distributions
 
 The Generalized Gaussian family is a well-known distribution, but we're not satisfied with the $$\ell_p$$-norm sparsity it induces. In fact, it's possible to directly encode $$\ell_0$$-norm into the target distribution, and this brings us to the key innovation of our paper: **regularizing rectified features towards the Rectified Generalized Gaussian distributions**. 
 
+Let $$\mathbf{x}\sim\prod_{i=1}^d\mathcal{GN}_p(\mu,\sigma)$$ be a Generalized Gaussian random vector. Then we can obtain the (product) Rectified Generalized Gaussian random vector as $$\mathbf{z}\sim\prod_{i=1}^d\operatorname{ReLU}(\mathcal{GN}_p(\mu,\sigma))$$, where we apply the rectifying nonlinearities coordinate-wise to the Generalized Gaussian random vector. We visualize the samples drawn from the Generalized Gaussian and Rectified Generalized Gaussian distribution in $$2$$-dimensions when $$p=2$$.
 
-<!-- <div class="l-page">
-  <div style="
-    transform: scale(0.6);
-    transform-origin: top center;
-    width: 100%;
-  ">
-    <iframe
-      src="{{ '/assets/plotly/vary_mu_p2_sigma1.html' | relative_url }}"
-      frameborder="0"
-      scrolling="no"
-      height="800"
-      width="100%"
-      style="border: 1px dashed grey;"
-    ></iframe>
+<div class="row mt-3 text-center">
+  <div class="col-sm mt-3 mt-md-0">
+    {% include figure.html
+      path="assets/img/rectified_lp_jepa/gaussian_vs_rectified_scatter_False.png"
+      class="img-fluid rounded z-depth-1"
+      zoomable=true %}
+    <div class="caption">
+      Samples from Gaussian and Rectified Gaussian
+    </div>
   </div>
-</div> -->
+
+  <div class="col-sm mt-3 mt-md-0">
+    {% include figure.html
+      path="assets/img/rectified_lp_jepa/gaussian_vs_rectified_scatter_True.png"
+      class="img-fluid rounded z-depth-1"
+      zoomable=true %}
+    <div class="caption">
+      ReLU sqaushes the Gaussian samples into the axis. 
+    </div>
+  </div>
+</div>
+
+As illustrated in the figure above, rectification collapses all samples lying outside the positive orthant onto its boundary, while samples in the interior of the positive orthant remain unchanged. 
+
+Let $$\Phi_{\mathcal{GN}_p(0,1)}$$ be the cumulative distribution function for the standard Generalized Gaussian distribution $$\mathcal{GN}_p(0, 1)$$. In $$d$$-dimensional spaces, the probability of the random vector being in the interior of the positive orthant $[0,\infty)^d$ is $(1-\Phi_{\mathcal{GN}_p(0,1)}(-\mu/\sigma))^d$, which decays to $0$ exponentially fast as $d\to\infty$. Thus in high dimensions, most of the rectified samples concentrates on the boundary of the positive orthant cone.
+
+
+It's also possible to characterize the probability density function $$f_{\mathcal{RGN}_p(\mu,\sigma)}(\cdot)$$ of the univariate Rectified Generalized Gaussian distribution (which we also denote as $$\mathcal{RGN}_p(\mu,\sigma)$$):
+
+
+$$
+\begin{align}
+    f_{\mathcal{RGN}_p(\mu,\sigma)}(z)&=\Phi_{\mathcal{GN}_p(0,1)}\bigg(-\frac{\mu}{\sigma}\bigg)\cdot\mathbb{1}_{\{0\}}(z)\\&+\frac{p^{1-1/p}}{2\sigma\Gamma(1/p)}\exp\bigg(-\frac{|z-\mu|^p}{p\sigma^p}\bigg)\cdot\mathbb{1}_{(0,\infty)}(z)
+\end{align}
+$$
+
+where $$\Gamma(\cdot)$$ is the Gamm function and $$\mathbb{1}_{S}(z)$$ is the indicator function that evaluates to $$1$$ if $$z\in S$$ and $$0$$ otherwise.
+
+<!-- Intuitively, the rectification map collapses the entire negative half-line onto a single point while leaving the positive half-line unchanged. As a result, the original continuous mass for the Generalized Gaussian distribution on $$(-\infty,0]$$ becomes a discrete atom at zero, while the density on $$(0,\infty)$$ is preserved. -->
+
+
+## Rectified Distribution Matching Regularization (RDMReg)
+
+After identifying the desirable target distribution $$Q$$, we would like to know how to find the appropriate distribution-matching loss $$\mathcal{L}(\cdot\|\cdot)$$ in Eq. (3). Naively, one can consider the KL divergence $$D_{\operatorname{KL}}(\mathbb{P}_{\mathbf{z}}\|Q)$$ with the Monte-Carlo estimate:
+$$
+\begin{align}
+D_{\operatorname{KL}}(\mathbb{P}_{\mathbf{z}}\|Q) = \int\log\frac{d\mathbb{P}_{\mathbf{z}}(x)}{dQ(x)}d\mathbb{P}_{\mathbf{z}}(x)\approx \frac{1}{B}\sum_{i=1}^{B}\log\frac{p_{\mathbf{z}}(\mathbf{z}_i)}{q(\mathbf{z}_i)}
+\end{align}
+$$
+However, directly performing distribution-matching in high dimensional space suffers from the **curse of dimensionality**: density estimations are intractable and we require exponential number of samples in dimensions. Thus we resort to a family of method based on the Cramer-Wold theorem.
+
+## Rectified LpJEPA
+
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.html path="assets/img/final_teasor.png" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
+<div class="caption">
+    Rectified LpJEPA
+</div>
 
 <div class="l-page">
   <div style="
@@ -261,22 +306,6 @@ The Generalized Gaussian family is a well-known distribution, but we're not sati
       "
     ></iframe>
   </div>
-</div>
-
-
-
-## RDMReg
-
-## Rectified LpJEPA
-
-
-<div class="row mt-3">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/final_teasor.png" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    Rectified LpJEPA
 </div>
 
 
