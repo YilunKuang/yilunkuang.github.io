@@ -300,8 +300,16 @@ where $$\Gamma(\cdot)$$ is the Gamm function and $$\mathbb{1}_{S}(z)$$ is the in
 
 After identifying the desirable target distribution as the Rectified Generalized Gaussian family, we would like to regularize the neural network feature towards it using Eq. (4). 
 
-Contrary to the isotropic Gaussian, which is closed under linear combinations, the Rectified Generalized Gaussian (RGG) family is not preserved under linear projections: the one-dimensional projected marginals generally fall outside the RGG family. In fact, closure under linear combinations characterizes the class of multivariate stable distributions \citep{nolan1993multivariate}, which is disjoint from our RGG family. As illustrated in \cref{fig:ttt2}, while any linear projection of a Gaussian remains Gaussian, projecting a Rectified Gaussian along different directions yields distinctly different marginals that no longer belong to the Rectified Gaussian family.
+Contrary to the isotropic Gaussian, which is closed under linear combinations, the Rectified Generalized Gaussian (RGG) family is not preserved under linear projections: the one-dimensional projected marginals generally fall outside the RGG family. In fact, closure under linear combinations characterizes the class of multivariate stable distributions <d-cite key="nolan1993multivariate"></d-cite>, which is disjoint from our RGG family. As illustrated in the following figure, while any linear projection of a Gaussian remains Gaussian, projecting a Rectified Gaussian along different directions yields distinctly different marginals that no longer belong to the Rectified Gaussian family.
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.html path="assets/img/rectified_lp_jepa/rectified_gaussian_shadow_grid_8x8.png" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
+<div class="caption">
+    Nonclose Under Projections
+</div>
 
  <!-- know how to find the appropriate distribution-matching loss $$\mathcal{L}(\cdot\|\cdot)$$ in Eq. (3).  -->
 
@@ -341,7 +349,7 @@ Contrary to the isotropic Gaussian, which is closed under linear combinations, t
 </div>
 
 
-## additional helper
+<!-- ## additional helper
 
 
 You just need to surround your math expression with `$$`, like `$$ E = mc^2 $$`.
@@ -391,7 +399,7 @@ Markdown | Less | Pretty
 
 Quote break.
 
-> This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can *put* **Markdown** into a blockquote.
+> This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can *put* **Markdown** into a blockquote. -->
 
 
 <!-- Self-supervised learning achieves this by creating another view $\mathbf{x}\'$ of the input $\mathbf{x}$. For images, this could be a cropped, rotated, or even corrupted version of the original image $\mathbf{x}$ which still preserves some information about what $\mathbf{x}$ is. For audio and video, this can just be temporally adjacent clips or frames which are slowly varying and hence semantically related to each other.  -->
