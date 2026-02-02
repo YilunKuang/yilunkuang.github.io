@@ -5,7 +5,7 @@ description: Joint-Embedding Predictive Architectures with Sparse and Maximum-En
 tags: JEPA Sparsity
 giscus_comments: true
 date: 2026-01-30
-thumbnail: assets/img/final_teasor.png
+thumbnail: assets/img/rectified_lp_jepa/rectified_gaussian_shadow_135.png
 
 authors:
   - name: Yilun Kuang
@@ -185,13 +185,13 @@ The choice of Gaussian as the target distribution is not an arbitrary one. Geome
 
 This geometric behavior has a direct information-theoretic correspondence. Among all possible probability distributions with a fixed expected $\ell_2$-norm (i.e., fixed average energy), the isotropic Gaussian **maximizes entropy**. In other words, if we constrain only how much energy the features carry and impose no further structure, the Gaussian is the most "spread out" distribution possible.
 
-{% details Details on Maximum-Entropy Distributions %}
+<!-- {% details Details on Maximum-Entropy Distributions %}
 TODO.
-{% enddetails %}
+{% enddetails %} -->
 
 ### Product Laplace Distributions
 
-While isotropic Gaussian regularization effectively prevents feature collapse, it inherently favors dense representations, where most feature dimensions are active. In contrast, extensive evidence from neuroscience, signal processing, and machine learning suggests that **sparse representations** are often more efficient and robust. Sparse coding plays a central role in compressed sensing and robust recovery, and biological neural systems are known to encode sensory inputs using non-negative, sparse activations under metabolic constraints. <span style="color:red;">TODO: add citations later.</span>
+While isotropic Gaussian regularization effectively prevents feature collapse, it inherently favors dense representations, where most feature dimensions are active. In contrast, extensive evidence from neuroscience, signal processing, and machine learning suggests that **sparse representations** are often more efficient and robust. Sparse coding plays a central role in compressed sensing and robust recovery, and biological neural systems are known to encode sensory inputs using non-negative, sparse activations under metabolic constraints <d-cite key="olshausen1996emergence"></d-cite> <d-cite key="donoho2006compressed"></d-cite> <d-cite key="lee1999learning"></d-cite> <d-cite key="glorot2011deep"></d-cite>.
 
 Motivated by these observations, we seek to induce sparsity directly at the level of the feature distribution. A simple and principled approach is to replace isotropic Gaussian regularization with **product Laplace** $$\prod_{i=1}^{d}\mathcal{L}(0,\sigma)$$ regularization.
 
@@ -216,19 +216,17 @@ The geometry of the $$\ell_1$$ norm directly explains why the Product Laplace di
 
 The other way to think about why Laplace induces sparsity is through the lens of regularized linear regression. It's well known that **Lasso regression** with $\ell_1$ penalty on the weight is equivalent to Maximum A Posteriori (MAP) estimation with a **Laplace prior**, whereas **Ridge regression** with $\ell_2$ regularization on the weight corresponds to MAP estimation with a **Gaussian prior** <d-cite key="bishop2006pattern"></d-cite>. Hence just as how the Lasso loss constrains the $$\ell_1$$ norm of the parameters, imposing Laplace distributions over features regularizes the output of the neural network functions and thus naturally induces sparsity in the learned representations.
 
-{% details Details on Regularized Linear Regression %}
+<!-- {% details Details on Regularized Linear Regression %}
 TODO.
-{% enddetails %}
+{% enddetails %} -->
 
 ### Generalized Gaussian Distributions
 
 We observe that both Laplace and Gaussian are maximum-entropy distributions over either expected $$\ell_1$$ amd $$\ell_2$$ norm constraints. Since the $$\ell_1$$-norm already promotes sparsity, a natural question is how much further can we go. 
 
-To answer this, we need to define our sparsity metrics. The most direct notion of sparsity is the **$\ell_0$ (pseudo-)norm** which simply counts the number of nonzero entries in a vector. The **$\ell_1$-norm** is commonly used as a convex surrogate for $$\ell_0$$, but it still penalizes all nonzero entries linearly and can produce only approximately sparse solutions.
+To answer this, we need to define our sparsity metrics. The most direct notion of sparsity is the **$\ell_0$ (pseudo-)norm** which simply counts the number of nonzero entries in a vector. However, direct minimization of $\ell_0$ norm is an NP-hard problem <d-cite key="natarajan1995sparse"></d-cite>. The **$\ell_1$-norm** is commonly used as a convex surrogate for $$\ell_0$$ <d-cite key="tibshirani1996regression"></d-cite>, but it still penalizes all nonzero entries linearly and can produce only approximately sparse solutions.
 
-More generally, $\ell_p$ **quasi-norms** with $0 < p < 1$ provide a closer approximation to $\ell_0$. Their sharp singularity near zero strongly encourages exact sparsity, while their weaker growth for large values reduces shrinkage on important components. Although nonconvex, such penalties are well known to yield significantly sparser representations than $\ell_1$ in practice. <span style="color:red;">TODO: add citations later.</span>
-
-<!-- More generally, $\ell_p$ quasi-norms $\|\mathbf{x}\|_p^p:=\sum_{i=1}^d|\mathbf{x}_i|^p$ with $0<p<1$ provide a closer, nonconvex approximation to $\ell_0$: their singular behavior near zero strongly favors exact sparsity while exerting weaker penalties on large-magnitude components. Although nonconvexity complicates optimization, such penalties have been shown to yield sparser and less biased solutions than $\ell_1$ under suitable conditions \citep{chartrand2007exact,chartrand2008iteratively}. -->
+More generally, $\ell_p$ **quasi-norms** with $0 < p < 1$ provide a closer approximation to $\ell_0$. Their sharp singularity near zero strongly encourages exact sparsity, while their weaker growth for large values reduces shrinkage on important components. Although nonconvex, such penalties are well known to yield significantly sparser representations than $\ell_1$ in practice <d-cite key="chartrand2007exact"></d-cite> <d-cite key="chartrand2008iteratively"></d-cite>.
 
 Thus we would like to consider distributions with the $$\ell_p$$ quasi-norms constraints. In fact, the **maximum-entropy** distribution under the expected $$\ell_p$$-norm constraints is the zero-mean **product Generalized Gaussian** distributions $$\prod_{i=1}^{d}\mathcal{GN}_p(\mu,\sigma)$$, of which product Laplace and isotropic Gaussian are special cases for $$p=1$$ and $$p=2$$ respectively.
 
@@ -497,7 +495,7 @@ In contrast, we explicitly introduce an additional rectification at the output a
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/final_teasor.png" class="img-fluid rounded z-depth-1" %}
+        {% include figure.html path="assets/img/rectified_lp_jepa/final_teasor.png" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
 <div class="caption">
@@ -506,8 +504,20 @@ In contrast, we explicitly introduce an additional rectification at the output a
 
 ## Sparsity-Performance Tradeoffs
 
-Finally, we can train our Rectified LpJEPA model. 
+Finally, we can train our Rectified LpJEPA model. For simplicity, we can consider self-supervised pretraining over the CIFAR-100 dataset. By varying the mean shift values $$\mu$$ and the $$\ell_p$$ parameter $$p$$ while fixing $$\sigma=\Gamma(1/p)^{1/2}/(p^{1/p}\cdot\Gamma(3/p)^{1/2})$$, we observe a clear sparsity-performance tradeoff
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.html path="assets/img/rectified_lp_jepa/l0_norm_sparsity_vs_accuracy.png" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
+<div class="caption">
+    Sparsity-Performance Tradeoffs
+</div>
+
+More experiments can be found in our paper. Overall, Rectified LpJEPA is a new approach to learn sparse representations through distribution matching to the Rectified Generalized Gaussian distributions, and please check out our codebase and paper if you are interested in learning more about it! 
+
+<!-- l0_norm_sparsity_vs_accuracy.png -->
 
 <!-- ## additional helper
 
