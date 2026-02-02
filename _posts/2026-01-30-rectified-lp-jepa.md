@@ -24,6 +24,10 @@ bibliography: 2026-01-30-rectified-lp-jepa.bib
 toc:
   - name: Self-Supervised Learning
   - name: Distribution-Matching Regularization
+    subsections:
+      - name: Distribution-Matching as Regularization
+      - name: Cramér-Wold Theorem
+      - name: Sketched Isotropic Gaussian Regularization (SIGReg)
   - name: Target Distributions
     subsections:
       - name: Isotropic Gaussian Distributions
@@ -60,10 +64,11 @@ Consider an input vector $\mathbf{x}$, such as an image, an audio clip, or a vid
 $$
 \begin{align}
 \mathbf{z}=f_{\boldsymbol{\theta}}(\mathbf{x})\in\mathbb{R}^d
+\tag{1}
 \end{align}
 $$
 
-in the absence of any labeling information. Self-supervised learning makes this possible by creating supervision from the data itself <d-cite key="balestriero2023cookbookselfsupervisedlearning"></d-cite>. Given $\mathbf{x}$, we can generate another view $\mathbf{x}\'$ of the input $\mathbf{x}$ that preserves the same semantic content.
+in the absence of any labeling information, where $$f_{\boldsymbol{\theta}}(\cdot)$$ is the neural network with parameters $$\boldsymbol{\theta}$$. Self-supervised learning makes this possible by creating supervision from the data itself <d-cite key="balestriero2023cookbookselfsupervisedlearning"></d-cite>. Given $\mathbf{x}$, we can generate another view $\mathbf{x}\'$ of the input $\mathbf{x}$ that preserves the same semantic content.
 - For images, $\mathbf{x}\'$ might be a cropped, rotated, or even corrupted version of $\mathbf{x}$
 - For audio or video, $\mathbf{x}\'$ can be a nearby time segment or adjacent frame.
 
@@ -71,61 +76,85 @@ Although $\mathbf{x}$ and $\mathbf{x}\'$ may look different, they are assumed to
 
 $$
 \begin{align}
-\min_{\boldsymbol{\theta}}\|\mathbf{z}-\mathbf{z}'\|_2
+\min_{\boldsymbol{\theta}}\mathbb{E}_{\mathbf{z},\mathbf{z}'}[\|\mathbf{z}-\mathbf{z}'\|_2]
 \tag{2}
 \end{align}
 $$
 
-where $$\mathbf{z}' = f_{\boldsymbol{\theta}}(\mathbf{x}')$$. By enforcing agreement across many randomly generated views, the network learns features that are invariant to nuisance transformations and capture meaningful structure in the data.
+where $$\mathbf{z}' = f_{\boldsymbol{\theta}}(\mathbf{x}')$$ and $$\mathbf{z}'\sim\mathbb{P}_{\mathbf{z}'}$$, $$\mathbf{z}\sim\mathbb{P}_{\mathbf{z}}$$ are sampled from the feature distributions. By enforcing agreement across many randomly generated views, the network learns features that are invariant to nuisance transformations and capture meaningful structure in the data.
 
 ## Distribution-Matching Regularization
 
+### Distribution-Matching as Regularization
+
 Simply minimizing the $$\ell_2$$ distance (Eq. (2)) between views, however, can lead to the problem of **feature collapse**. In the extreme case, the network can map every input to the same vector, resulting in **complete collapse**. Eq. (2) is perfectly minimized, but the representation is useless as it cannot distinguish between different inputs. More subtle forms of collapse also occur, such as **dimensional collapse**, where different feature dimensions encode redundant information <d-cite key="jing2022understandingdimensionalcollapsecontrastive"></d-cite>.
 
-The goal of self-supervised learning is therefore to enforce invariance across views while maximally spreading feature vectors in the ambient space. One effective way to do this is to regularize the feature distributions $$\mathbb{P}_{\mathbf{z}}$$ and $$\mathbb{P}_{\mathbf{z}'}$$ towards a carefully chosen **target distribution** $$Q$$, which explicitly encodes desirable properties such as dispersion and diversity across feature dimensions. Thus the self-supervised learning objective in Eq. (2) can be augmented as
+The goal of self-supervised learning is therefore to enforce invariance across views while maximally spreading feature vectors in the ambient space to prevent collapse. One effective way to do this is to regularize the feature distributions $$\mathbb{P}_{\mathbf{z}}$$ and $$\mathbb{P}_{\mathbf{z}'}$$ towards a carefully chosen **target distribution** $$Q$$, which explicitly encodes desirable properties such as dispersion and diversity across feature dimensions. Thus the self-supervised learning objective in Eq. (2) can be augmented as
 
 $$
 \begin{align}
-\min_{\boldsymbol{\theta}}\|\mathbf{z}-\mathbf{z}'\|_2+\mathcal{L}(\mathbb{P}_{\mathbf{z}}\|Q)+\mathcal{L}(\mathbb{P}_{\mathbf{z}'}\|Q)
+\min_{\boldsymbol{\theta}}\mathbb{E}_{\mathbf{z},\mathbf{z}'}[\|\mathbf{z}-\mathbf{z}'\|_2]+\mathcal{L}(\mathbb{P}_{\mathbf{z}}\|Q)+\mathcal{L}(\mathbb{P}_{\mathbf{z}'}\|Q)
 \tag{3}
 \end{align}
 $$
 
-where $$\mathcal{L}(\cdot\|\cdot)$$ is any distribution-matching loss that's minimized when the two distributions are identical.
+where $$\mathcal{L}(P\|Q)$$ is any differentiable distributional discrepancy that is minimized when $$P$$ and $$Q$$ are equal in distribution.
 
 Naively, one can consider the KL divergence $$D_{\operatorname{KL}}(\mathbb{P}_{\mathbf{z}}\|Q)$$ with the Monte-Carlo estimate:
-$$
-\begin{align}
-D_{\operatorname{KL}}(\mathbb{P}_{\mathbf{z}}\|Q) = \int\log\frac{d\mathbb{P}_{\mathbf{z}}(x)}{dQ(x)}d\mathbb{P}_{\mathbf{z}}(x)\approx \frac{1}{B}\sum_{i=1}^{B}\log\frac{p_{\mathbf{z}}(\mathbf{z}_i)}{q(\mathbf{z}_i)}
-\end{align}
-$$
-However, directly performing distribution-matching in high dimensional space suffers from the **curse of dimensionality**: density estimations are intractable and we require exponential number of samples in dimensions. Thus we resort to a family of method based on the Cramer-Wold theorem <d-cite key="cramer1936"></d-cite> <d-cite key="wold1938"></d-cite>.
-
-The **Cramér–Wold theorem** states that two random vectors $$\mathbf{x},\mathbf{y}\in\mathbb{R}^d$$ are equal in distribution if and only if all their one-dimensional linear projections are equal in distribution.
 
 $$
 \begin{align}
-    \mathbf{x}\stackrel{\operatorname{d}}{=}\mathbf{y}\iff \mathbf{c}^\top\mathbf{x}\stackrel{\operatorname{d}}{=}\mathbf{c}^\top\mathbf{y}\text{ for all }\mathbf{c}\in\mathbb{R}^d
+D_{\operatorname{KL}}(\mathbb{P}_{\mathbf{z}}\|Q) = \int\log\frac{d\mathbb{P}_{\mathbf{z}}(\mathbf{z})}{dQ(\mathbf{z})}d\mathbb{P}_{\mathbf{z}}(\mathbf{z})\approx \frac{1}{B}\sum_{i=1}^{B}\log\frac{p_{\mathbf{z}}(\mathbf{z}_i)}{q(\mathbf{z}_i)}
+\tag{4}
 \end{align}
 $$
 
-where the superscript $$\operatorname{d}$$ above the equal sign denotes equality in distribution. This result enables us to decompose a high-dimensional distribution matching problem into parallelized one-dimension optimizations under many different projections induced by $$\mathbf{c}$$, which significantly reduces the sample complexity in each of the one-dimensional problems. 
+However, directly performing distribution-matching in high dimensional space suffers from the **curse of dimensionality**: density estimations are intractable and we require exponential number of samples in dimensions <d-cite key="mcallester2020formallimitationsmeasurementmutual"></d-cite>. Thus we resort to a family of method based on the Cramér-Wold theorem <d-cite key="cramer1936"></d-cite> <d-cite key="wold1938"></d-cite>.
+
+### Cramér-Wold Theorem
+
+The **Cramér-Wold theorem** states that two random vectors $$\mathbf{x},\mathbf{y}\in\mathbb{R}^d$$ are equal in distribution if and only if all of their one-dimensional projected marginals are equal in distribution, i.e.
+
+$$
+\begin{align}
+\mathbf{x}\stackrel{\operatorname{d}}{=}\mathbf{y}\iff \mathbf{c}^\top\mathbf{x}\stackrel{\operatorname{d}}{=}\mathbf{c}^\top\mathbf{y}\text{ for all }\mathbf{c}\in\mathbb{R}^d
+\tag{5}
+\end{align}
+$$
+
+where the superscript $$\operatorname{d}$$ above the equal sign denotes equality in distribution. This result enables us to decompose a high-dimensional distribution matching problem into parallelized one-dimension optimizations under many different projections induced by $$\mathbf{c}$$, which significantly reduces the sample complexity in each of the one-dimensional problems. This projection-based distribution matching idea traces back to projection pursuit. See <d-cite key="friedman2006projection"></d-cite> for early treatments.
 
 With the Cramér–Wold theorem, Eq. (3) can be updated as 
 
 $$
 \begin{align}
-\min_{\boldsymbol{\theta}}\|\mathbf{z}-\mathbf{z}'\|_2+\mathbb{E}_{\mathbf{c}}[\mathcal{L}(\mathbb{P}_{\mathbf{c}^\top\mathbf{z}}\|\mathbb{P}_{\mathbf{c}^\top\mathbf{y}})]+\mathbb{E}_{\mathbf{c}}[\mathcal{L}(\mathbb{P}_{\mathbf{c}^\top\mathbf{z}'}\|\mathbb{P}_{\mathbf{c}^\top\mathbf{y}})]
-\tag{4}
+\min_{\boldsymbol{\theta}}\mathbb{E}_{\mathbf{z},\mathbf{z}'}[\|\mathbf{z}-\mathbf{z}'\|_2]+\mathbb{E}_{\mathbf{c}}[\mathcal{L}(\mathbb{P}_{\mathbf{c}^\top\mathbf{z}}\|\mathbb{P}_{\mathbf{c}^\top\mathbf{y}})]+\mathbb{E}_{\mathbf{c}}[\mathcal{L}(\mathbb{P}_{\mathbf{c}^\top\mathbf{z}'}\|\mathbb{P}_{\mathbf{c}^\top\mathbf{y}})]
+\tag{6}
 \end{align}
 $$
 
-where $$\mathbf{y}\sim Q$$ and $$\mathbf{c}^\top\mathbf{y}\sim\mathbb{P}_{\mathbf{c}^\top\mathbf{y}}$$ denotes the distribution of the projected targets. Thus we have converted a high-dimensional distribution matching problem into an expectation over univariate distribution-matching objectives. Even if Cramér–Wold theorem guarantees convergence under asymptotic number of projection vectors, in practice we only need finite projections and LeJEPA <d-cite key="balestriero2025lejepaprovablescalableselfsupervised"></d-cite> further shows that we only need to sample the projection vectors $$\mathbf{c}$$ from the unit $$\ell_2$$ sphere $$\mathbb{S}^{d-1}_{\ell_2}:=\{\mathbf{x}\in\mathbb{R}^{d}\mid\|\mathbf{x}\|_2=1\}$$.
+where $$\mathbf{y}\sim Q$$, $$\mathbf{c}^\top\mathbf{y}\sim\mathbb{P}_{\mathbf{c}^\top\mathbf{y}}$$ denotes the distribution of the projected targets, and $$\mathbf{c}^\top\mathbf{z}\sim\mathbb{P}_{\mathbf{c}^\top\mathbf{z}}$$ represents the distribution of the projected features. Thus we have converted a high-dimensional distribution matching problem $$\mathcal{L}(\mathbb{P}_{\mathbf{z}}\|Q)$$ into an expectation over univariate distribution-matching objectives as $$\mathbb{E}_{\mathbf{c}}[\mathcal{L}(\mathbb{P}_{\mathbf{c}^\top\mathbf{z}}\|\mathbb{P}_{\mathbf{c}^\top\mathbf{y}})]$$. 
 
+Even if Cramér–Wold theorem guarantees convergence under asymptotic number of projection vectors, in practice we only need finite projections and it suffices to sample the projection vectors $$\mathbf{c}$$ uniformly from the unit $$\ell_2$$ sphere $$\mathbb{S}^{d-1}_{\ell_2}:=\{\mathbf{x}\in\mathbb{R}^{d}\mid\|\mathbf{x}\|_2=1\}$$, rather than from the entire space $$\mathbb{R}^d$$ <d-cite key="balestriero2025lejepaprovablescalableselfsupervised"></d-cite>.
 
-In the next section, we discuss what are the choices of $$Q$$ which encourages maximally spread-out and diverse features. 
+### Sketched Isotropic Gaussian Regularization (SIGReg)
+
+The **SIGReg** objective in LeJEPA <d-cite key="balestriero2025lejepaprovablescalableselfsupervised"></d-cite> is the first paper which adopts Eq. (6) as the self-supervised learning objective. SIGReg chooses the target distribution $$Q$$ to be the isotropic Gaussian distribution $$\mathcal{N}(\mathbf{0},\mathbf{I}_{d})$$, and parameterizes the distribution-matching loss as the **Epps-Pulley** test
+
+$$
+\begin{align}
+\mathcal{L}(\mathbb{P}_{\mathbf{c}^\top\mathbf{z}}\|\mathbb{P}_{\mathbf{c}^\top\mathbf{y}})=\int_{\mathbb{R}}\vert\varphi_{\mathbb{P}_{\mathbf{c}^\top\mathbf{z}}}(t)-\varphi_{\mathbb{P}_{\mathbf{c}^\top\mathbf{y}}}(t)\vert^2 \omega(t)dt
+\tag{7}
+\end{align}
+$$
+
+where $$\varphi_{P}$$ denotes the characteristic function of the distribution $$P$$ and $$\omega(t)=e^{-t^2/2}$$ is the weight function. Intuitively, SIGReg minimizes the discrepancy between the characteristic function of the projected features—estimated empirically from minibatch samples—and that of the projected target distribution, which admits a closed-form expression. 
+
+This formulation yields a **one-sample** goodness-of-fit test: only the feature distribution is estimated from data, while the target distribution is fixed and analytically specified through its characteristic function. As we show later, the **RDMReg** loss for our **Rectified LpJEPA** requires a **two-sample** goodness-of-fit test due to a different choice of the target distribution $$Q$$. 
 
 ## Target Distributions
+
+In the following section, we discuss choices of the target distribution $$Q$$ that encourage maximally spread-out and diverse feature representations, while simultaneously encoding **sparsity**. We begin, however, by revisiting the **isotropic Gaussian**, which induces dense representations and serves as a natural baseline.
 
 ### Isotropic Gaussian Distributions
 
