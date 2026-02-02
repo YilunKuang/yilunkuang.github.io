@@ -189,6 +189,7 @@ This geometric behavior has a direct information-theoretic correspondence. Among
 TODO.
 {% enddetails %} -->
 
+
 ### Product Laplace Distributions
 
 While isotropic Gaussian regularization effectively prevents feature collapse, it inherently favors dense representations, where most feature dimensions are active. In contrast, extensive evidence from neuroscience, signal processing, and machine learning suggests that **sparse representations** are often more efficient and robust. Sparse coding plays a central role in compressed sensing and robust recovery, and biological neural systems are known to encode sensory inputs using non-negative, sparse activations under metabolic constraints <d-cite key="olshausen1996emergence"></d-cite> <d-cite key="donoho2006compressed"></d-cite> <d-cite key="lee1999learning"></d-cite> <d-cite key="glorot2011deep"></d-cite>.
