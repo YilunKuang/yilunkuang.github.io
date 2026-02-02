@@ -2,7 +2,7 @@
 layout: distill
 title: Rectified LpJEPA
 description: Joint-Embedding Predictive Architectures with Sparse and Maximum-Entropy Representations
-tags: distill formatting
+tags: JEPA Sparsity
 giscus_comments: true
 date: 2026-01-30
 thumbnail: assets/img/final_teasor.png
@@ -33,9 +33,11 @@ toc:
       - name: Isotropic Gaussian Distributions
       - name: Product Laplace Distributions
       - name: Generalized Gaussian Distributions
-      - name: Rectified Generalized Gaussian Distributions
+      - name: Rectified Generalized Gaussian Distributions (RGG)
+      - name: Sparsity and Entropy Characterizations of RGG
   - name: Rectified Distribution Matching Regularization (RDMReg)
   - name: Rectified LpJEPA
+  - name: Sparsity-Performance Tradeoffs
 
 # Below is an example of injecting additional post-specific styles.
 # If you use this post as a template, delete this _styles block.
@@ -198,7 +200,7 @@ Motivated by these observations, we seek to induce sparsity directly at the leve
 > $$p(\mathbf{z})=\frac{1}{(2\sigma)^d}\exp\bigg(-\frac{\|\mathbf{z}\|_1}{\sigma}\bigg)$$
 {: .block-tip }
 
-Contrary to Gaussian, the product Laplace distribution $$\mathbf{z}\sim\prod_{i=1}^{d}\mathcal{L}(0,\sigma)$$ is the **maximum-entropy** distribution under a fixed expected $\ell_1$-norm constraint. Its radius follows the Gamma distribution $$\|\mathbf{z}\|_1\sim\Gamma(d/1, 1)$$ and the angular direction is **uniform** over the unit $\ell_1$ sphere.
+Contrary to Gaussian, the product Laplace distribution $$\mathbf{z}\sim\prod_{i=1}^{d}\mathcal{L}(0,\sigma)$$ is the **maximum-entropy** distribution under a fixed expected $\ell_1$-norm constraint. Its radius follows the Gamma distribution $$\|\mathbf{z}\|_1\sim\Gamma(d/1, 1)$$ and the angular direction $$\mathbf{z}/\|\mathbf{z}\|_1$$ is **uniformly** distributed over the unit $\ell_1$ sphere with respect to the surface measure.
 
 <div class="row justify-content-center" style="margin-top: 0.5rem;">
   <div class="col-sm-6">
@@ -231,10 +233,18 @@ More generally, $\ell_p$ **quasi-norms** with $0 < p < 1$ provide a closer appro
 Thus we would like to consider distributions with the $$\ell_p$$ quasi-norms constraints. In fact, the **maximum-entropy** distribution under the expected $$\ell_p$$-norm constraints is the zero-mean **product Generalized Gaussian** distributions $$\prod_{i=1}^{d}\mathcal{GN}_p(\mu,\sigma)$$, of which product Laplace and isotropic Gaussian are special cases for $$p=1$$ and $$p=2$$ respectively.
 
 > ##### Probability Density Functions of Product Generalized Gaussian
-<!-- > Let $\space\mathbf{z}\sim\prod_{i=1}^{d}\mathcal{GN}_p(\mu,\sigma)$, then the density function is given by -->
 > 
-> $$p(\mathbf{z})=\frac{p^{d-d/p}}{(2\sigma)^d\Gamma(1/p)^d}\exp\bigg(-\frac{\|\mathbf{z}-\boldsymbol{\mu}\|_p^p}{p\sigma^p}\bigg)$$
+> $$
+> \begin{aligned}
+> p(\mathbf{z})
+> &= \prod_{i=1}^{d}\frac{p^{1-1/p}}{2\sigma\Gamma(1/p)}
+>    \exp\!\left(-\frac{|\mathbf{z}_i-\mu|^p}{p\sigma^p}\right) \\
+> &= \frac{p^{d-d/p}}{(2\sigma)^d\Gamma(1/p)^d}
+>    \exp\!\left(-\frac{\|\mathbf{z}-\boldsymbol{\mu}\|_p^p}{p\sigma^p}\right)
+> \end{aligned}
+> $$
 {: .block-tip }
+
 
 Assume that $\mu=0$ and let $$\mathbf{z}\sim\prod_{i=1}^{d}\mathcal{GN}_p(\mu,\sigma)$$. Then the radius $$r^p:=\|\mathbf{z}\|_p^p\sim\Gamma(d/p,p\sigma^p)$$ follows the Gamma distribution and the angular direction $$\mathbf{u}:=\mathbf{z}/\|\mathbf{z}\|_p$$ follows the cone measure on the $\ell_p$ sphere $$\mathbb{S}^{d-1}_{\ell_{p}}:=\{\mathbf{z}\in\mathbb{R}^d\mid\|\mathbf{z}\|_p=1\}$$ with the radial-angular independence $$r\perp \!\!\ \mathbf{u}$$ <d-cite key="barthe2005probabilistic"></d-cite>.
 
@@ -278,7 +288,9 @@ Thus the angular directions of product Laplace and isotropic Gaussian are unifor
 
 Thus we can always regularizes our feature distributions towards the Generalized Gaussian Distributions $$\prod_{i=1}^{d}\mathcal{GN}_p(\mu,\sigma)$$ with $$0<p<1$$ for learning even sparser, axis-aligned representations while also preserving the maximum-entropy guarantee to prevent feature collapse.
 
-### Rectified Generalized Gaussian Distributions
+We denote the family of methods using Eq. (6) with the target distributions being Generalized Gaussian $$\prod_{i=1}^{d}\mathcal{GN}_p(0,\sigma)$$ as **LpJEPA**. When $$p=2$$, LpJEPA reduce to LeJEPA since the target distribution becomes the isotropic Gaussian.
+
+### Rectified Generalized Gaussian Distributions (RGG)
 
 The Generalized Gaussian family is a well-known distribution, but we're not satisfied with the $$\ell_p$$-norm sparsity it induces. In fact, it's possible to directly encode $$\ell_0$$-norm into the target distribution, and this brings us to the key innovation of our paper: **regularizing rectified features towards the Rectified Generalized Gaussian distributions**. 
 
@@ -308,52 +320,46 @@ Let $$\mathbf{x}\sim\prod_{i=1}^d\mathcal{GN}_p(\mu,\sigma)$$ be a Generalized G
 
 As illustrated in the figure above, rectification collapses all samples lying outside the positive orthant onto its boundary, while samples in the interior of the positive orthant remain unchanged. 
 
-Let $$\Phi_{\mathcal{GN}_p(0,1)}$$ be the cumulative distribution function for the standard Generalized Gaussian distribution $$\mathcal{GN}_p(0, 1)$$. In $$d$$-dimensional spaces, the probability of the random vector being in the interior of the positive orthant $[0,\infty)^d$ is $(1-\Phi_{\mathcal{GN}_p(0,1)}(-\mu/\sigma))^d$, which decays to $0$ exponentially fast as $d\to\infty$. Thus in high dimensions, most of the rectified samples concentrates on the boundary of the positive orthant cone.
-
+Let $$\Phi_{\mathcal{GN}_p(0,1)}$$ be the cumulative distribution function for the standard Generalized Gaussian distribution $$\mathcal{GN}_p(0, 1)$$. In $$d$$-dimensional spaces, the probability of a Rectified Generalized Gaussian random vector being in the interior of the positive orthant $[0,\infty)^d$ is $(1-\Phi_{\mathcal{GN}_p(0,1)}(-\mu/\sigma))^d$, which decays to $0$ exponentially fast as $d\to\infty$. Thus in high dimensions, most of the rectified samples concentrates on the boundary of the positive orthant cone.
 
 It's also possible to characterize the probability density function $$f_{\mathcal{RGN}_p(\mu,\sigma)}(\cdot)$$ of the univariate Rectified Generalized Gaussian distribution (which we also denote as $$\mathcal{RGN}_p(\mu,\sigma)$$):
 
-
 $$
 \begin{align}
-    f_{\mathcal{RGN}_p(\mu,\sigma)}(z)&=\Phi_{\mathcal{GN}_p(0,1)}\bigg(-\frac{\mu}{\sigma}\bigg)\cdot\mathbb{1}_{\{0\}}(z)\\&+\frac{p^{1-1/p}}{2\sigma\Gamma(1/p)}\exp\bigg(-\frac{|z-\mu|^p}{p\sigma^p}\bigg)\cdot\mathbb{1}_{(0,\infty)}(z)
+    f_{\mathcal{RGN}_p(\mu,\sigma)}(z)&=\Phi_{\mathcal{GN}_p(0,1)}\bigg(-\frac{\mu}{\sigma}\bigg)\cdot\mathbb{1}_{\{0\}}(z)\tag{8}\\&+\frac{p^{1-1/p}}{2\sigma\Gamma(1/p)}\exp\bigg(-\frac{|z-\mu|^p}{p\sigma^p}\bigg)\cdot\mathbb{1}_{(0,\infty)}(z)\tag{9}
 \end{align}
 $$
 
-where $$\Gamma(\cdot)$$ is the Gamm function and $$\mathbb{1}_{S}(z)$$ is the indicator function that evaluates to $$1$$ if $$z\in S$$ and $$0$$ otherwise.
+where $$\Gamma(\cdot)$$ is the Gamm function and $$\mathbb{1}_{S}(z)$$ is the indicator function that evaluates to $$1$$ if $$z\in S$$ and $$0$$ otherwise. We note the the probability density function here is in fact the Radon-Nikodym derivative of the Rectified Generalized Gaussian probability measure with respect to the Dirac + Lebesgue measure. Further details can be found in the paper.
 
-<!-- Intuitively, the rectification map collapses the entire negative half-line onto a single point while leaving the positive half-line unchanged. As a result, the original continuous mass for the Generalized Gaussian distribution on $$(-\infty,0]$$ becomes a discrete atom at zero, while the density on $$(0,\infty)$$ is preserved. -->
+{% details Measure-Theoretical Characterizations of the Rectified Generalized Gaussian Distribution %}
 
+Fix parameters $$p>0$$, $$\mu\in\mathbb{R}$$, and $$\sigma>0$$. We denote $$(\mathbb{R}, \mathcal{B}(\mathbb{R}))$$ as the real line equipped with Borel $$\sigma$$-algebra. Let $$\lambda$$ be the Lebesgue measure on $$\mathcal{B}(\mathbb{R})$$ and let $$\delta_0$$ be the Dirac measure at $$0$$. The probability measure $$\mathbb{P}_{X}$$ of the Rectified Generalized Gaussian random variable $$X$$ is given by the mixture
 
-## Rectified Distribution Matching Regularization (RDMReg)
+$$
+\mathbb{P}_{X}=\Phi_{\mathcal{GN}_p(0,1)}\bigg(-\frac{\mu}{\sigma}\bigg)\cdot\delta_0+\bigg(1-\Phi_{\mathcal{GN}_p(0,1)}\bigg(-\frac{\mu}{\sigma}\bigg)\bigg)\cdot\mathbb{P}_{\mathcal{TGN}_p(\mu,\sigma)}
+$$
 
-After identifying the desirable target distribution as the Rectified Generalized Gaussian family, we would like to regularize the neural network feature towards it using Eq. (4). 
+where $$\mathbb{P}_{\mathcal{TGN}_p(\mu,\sigma)}$$ is the Truncated Generalized Gaussian probability measure and $$\Phi_{\mathcal{GN}_p(0,1)}$$ is the CDF of the standard Generalized Gaussian $$\mathcal{GN}_{p}(0,1)$$. 
 
-Contrary to the isotropic Gaussian, which is closed under linear combinations, the Rectified Generalized Gaussian (RGG) family is not preserved under linear projections: the one-dimensional projected marginals generally fall outside the RGG family. In fact, closure under linear combinations characterizes the class of multivariate stable distributions <d-cite key="nolan1993multivariate"></d-cite>, which is disjoint from our RGG family. As illustrated in the following figure, while any linear projection of a Gaussian remains Gaussian, projecting a Rectified Gaussian along different directions yields distinctly different marginals that no longer belong to the Rectified Gaussian family.
+Define the mixed measure $$\nu:=\lambda+\delta_0$$. The Radon-Nikodym derivative of $$\mathbb{P}_X$$ with respect to $$\nu$$ exists and is given by 
 
-<div class="row mt-3">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/rectified_lp_jepa/rectified_gaussian_shadow_grid_8x8.png" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    Nonclose Under Projections
-</div>
+$$
+\frac{d\mathbb{P}_{X}}{d\nu}(x)=f_{\mathcal{RGN}_p(\mu,\sigma)}(x)
+$$
 
- <!-- know how to find the appropriate distribution-matching loss $$\mathcal{L}(\cdot\|\cdot)$$ in Eq. (3).  -->
+{% enddetails %}
 
+Intuitively, the Rectified Generalized Gaussian distribution can also be viewed as a mixture between a discrete Dirac measure $$\delta_0(x)$$ and a Truncated Generalized Gaussian distribution $$\mathcal{TGN}_{p}(\mu,\sigma,(0,\infty))$$, where $$\mathcal{TGN}_{p}(\mu,\sigma,(0,\infty))$$ has the density function
 
-## Rectified LpJEPA
+$$
+\begin{align}
+f_{\mathcal{TGN}_{p}(\mu, \sigma, (0,\infty))}(z)=\frac{\mathbb{1}_{(0,\infty)}(z)}{Z_S(\mu,\sigma,p)}\exp\bigg(-\frac{|z-\mu|^p}{p\sigma^p}\bigg)
+\tag{10}
+\end{align}
+$$
 
-
-<div class="row mt-3">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/final_teasor.png" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    Rectified LpJEPA
-</div>
+<!-- We provide a visualization of the difference in the density function between Generalized Gaussian, Truncated Generalized Gaussian, and Rectified Generalized Gaussian under varying mean shift value $$\mu$$:
 
 <div class="l-page">
   <div style="
@@ -375,7 +381,132 @@ Contrary to the isotropic Gaussian, which is closed under linear combinations, t
       "
     ></iframe>
   </div>
+</div> -->
+
+### Sparsity and Entropy Characterizations of RGG
+
+In our paper, we show that if $$\mathbf{x}\sim\prod_{i=1}^{d}\mathcal{RGN}_p(\mu,\sigma)$$ in $$d$$ dimension, then
+
+$$
+\begin{align}
+\mathbb{E}[\|\mathbf{x}\|_0]&=d\cdot\Phi_{\mathcal{GN}_p(0,1)}\bigg(\frac{\mu}{\sigma}\bigg)\tag{11}\\
+&=\frac{d}{2}\bigg(1+\operatorname{sgn}\bigg(\frac{\mu}{\sigma}\bigg)P\bigg(\frac{1}{p},\frac{|\mu/\sigma|^p}{p}\bigg)\bigg)\tag{12}
+\end{align}
+$$
+
+where $$\operatorname{sgn}(\cdot)$$ is the sign function and $$P(\cdot,\cdot)$$ is the lower regularized gamma function. Thus it's possible to directly control the expected $$\ell_0$$ norm of the Rectified Generalized Gaussian random vector through specifying the set of parameters $$\{\mu,\sigma,p\}$$.
+
+Due to rectifications, the RGG distribution is also no longer absolutely continuous with respect to the Lebesgue measure, rendering differential entropy ill-defined. Thus we resort to the concept of $$d(\boldsymbol{\xi})$$-dimensional entropy <d-cite key="renyi1959dimension"></d-cite>, which measures the Shannon entropy of quantized random vector under successive grid refinement. We are able to show that the Rectified Generalized Gaussian distribution preserves maximal-entropy guarantees—rescaled by the Rényi information dimension—while explicitly inducing $$\ell_0$$ sparsity.
+
+{% details Details on $$d(\boldsymbol{\xi})$$-dimensional entropy %}
+
+Let $$\boldsymbol{\xi}\sim\prod_{i=1}^{D}\mathcal{RGN}_p(\mu,\sigma)$$ be a Rectified Generalized Gaussian random vector. The Rényi information dimension of $$\boldsymbol{\xi}$$ is $$d(\boldsymbol{\xi})=D\cdot\Phi_{\mathcal{GN}_p(0,1)}(\mu/\sigma)$$, and the $$d(\boldsymbol{\xi})$$-dimensional entropy of $$\boldsymbol{\xi}$$ is given by    
+
+$$
+\begin{align}
+    \mathbb{H}_{d(\boldsymbol{\xi}_i)}(\boldsymbol{\xi}_i)&=\Phi_{\mathcal{GN}_p(0,1)}\bigg(\frac{\mu}{\sigma}\bigg)\cdot\mathbb{H}_{1}(\mathcal{TGN}_p(\mu,\sigma))\tag{*}\\
+    &+\mathbb{H}_{0}(\mathbb{1}_{(0,\infty)}(\boldsymbol{\xi}_i))\tag{*}\\
+    \mathbb{H}_{d(\boldsymbol{\xi})}(\boldsymbol{\xi})&=\sum_{i=1}^{D}\mathbb{H}_{d(\boldsymbol{\xi}_i)}(\boldsymbol{\xi}_i)=D\cdot \mathbb{H}_{d(\boldsymbol{\xi}_i)}(\boldsymbol{\xi}_i)\tag{*}
+\end{align}
+$$
+
+where $$\mathbb{H}_0(\cdot)$$ is the discrete Shannon entropy, $$\mathbb{H}_1(\cdot)$$ denotes the differential entropy, and $$\mathbb{1}_{(0,\infty)}(\boldsymbol{\xi}_i)$$ is a Bernoulli random variable that equals $$1$$ with probability $$\Phi_{\mathcal{GN}_p(0,1)}(\mu/\sigma)$$ and $$0$$ with probability $$1-\Phi_{\mathcal{GN}_p(0,1)}(\mu/\sigma)$$. 
+
+{% enddetails %}
+
+Thus we choose the Rectified Generalized Gaussian as our target distribution $$Q$$, which has an explicit expected $$\ell_0$$ norm guarantees, while also preserve the maximum-entropy property under the expected $$\ell_p$$ norm constraint under rescaling. The distribution-matching loss towards the Rectified Generalized Gaussian family is called **Rectified Distribution Matching Regularization (RDMReg)**, and a Joint-Embedding Predictive Architecture (JEPA) equipped with RDMReg is called **Rectified LpJEPA**. We dive into these two things in the rest of this blog post. 
+
+
+
+
+## Rectified Distribution Matching Regularization (RDMReg)
+
+After identifying the desirable target distribution as the Rectified Generalized Gaussian family, we would like to regularize the neural network feature towards it using Eq. (6). 
+
+Contrary to the isotropic Gaussian, which is closed under linear combinations, the Rectified Generalized Gaussian (RGG) family is not preserved under linear projections: the one-dimensional projected marginals generally fall outside the RGG family. In fact, **closure under linear combinations** characterizes the class of multivariate stable distributions <d-cite key="nolan1993multivariate"></d-cite>, which includes Gaussian but is disjoint from our RGG family. As illustrated in the following figure, while any linear projection of a Gaussian remains Gaussian, projecting a Rectified Gaussian along different directions yields distinctly different marginals that **no longer belong to the Rectified Gaussian family.**
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.html path="assets/img/rectified_lp_jepa/rectified_gaussian_shadow_grid_8x8.png" class="img-fluid rounded z-depth-1" %}
+    </div>
 </div>
+<div class="caption">
+    Projected Marginals of 2D Rectified Gaussian exhibit distinct patterns in different directions.
+</div>
+
+
+Consequently, the distribution matching loss $$\mathcal{L}(\cdot\|\cdot)$$ must rely on sample-based, nonparametric two-sample hypothesis tests on projected marginals <d-cite key="lehmann1951consistency"></d-cite>. Among many possible choices, we instantiate this objective using the sliced $$2$$-Wasserstein distance <d-cite key="bonneel2015sliced"></d-cite> <d-cite key="kolouri2018swae"></d-cite>. 
+
+Let $$\mathbf{Z},\mathbf{Y}\in\mathbb{R}^{B\times D}$$ be empirical neural network feature matrix and the samples from RGG where $$B$$ is batch size and $$D$$ is dimension. We denote a single random projection vector as $$\mathbf{c}_i\in\mathbb{R}^D$$ out of $$N$$ total projections. 
+
+The **Rectified Distribution Matching Regularization (RDMReg)** loss function is given by
+
+$$
+\begin{align}
+\mathcal{L}_{\operatorname{RDMReg}}(\mathbb{P}_{\mathbf{c}_i^\top\mathbf{z}}\|\mathbb{P}_{\mathbf{c}_i^\top\mathbf{y}}):=\frac{1}{B}\|(\mathbf{Z}\mathbf{c}_i)^{\uparrow}-(\mathbf{Y}\mathbf{c}_i)^{\uparrow}\|_2^2\tag{13}
+\end{align}
+$$
+
+where $$(\cdot)^{\uparrow}$$ denotes sorting in ascending order. The objective is implemented in the following python code snippet
+
+<d-code block language="python">
+import torch
+
+def rdmreg_loss(z, target_samples, num_projections):
+    B, D = z.shape
+    device = z.device
+    
+    # 1. Sample random projections from the unit L2 sphere.
+    projections = torch.randn(num_projections, D, device=device)
+    projections = projections / projections.norm(dim=1, keepdim=True)
+    
+    # 2. Project features and samples from the RGG distribution.
+    proj_z = torch.matmul(z, projections.T)
+    proj_target = torch.matmul(target_samples, projections.T)
+    
+    # 3. Sort along the batch dimension
+    proj_z_sorted, _ = torch.sort(proj_z, dim=0)
+    proj_target_sorted, _ = torch.sort(proj_target, dim=0)
+    
+    # 4. Compute and Return the Sliced 2-Wasserstein distance
+    return torch.mean((proj_z_sorted - proj_target_sorted)**2)
+
+</d-code>
+
+
+
+## Rectified LpJEPA
+
+Equipped with **RDMReg**, we arrive at our final objective function 
+
+
+$$
+\begin{align}
+\min_{\boldsymbol{\theta}}\mathbb{E}_{\mathbf{z},\mathbf{z}'}[\|\mathbf{z}-\mathbf{z}'\|_2]&+\mathbb{E}_{\mathbf{c}}[\mathcal{L}_{\operatorname{RDMReg}}(\mathbb{P}_{\mathbf{c}^\top\mathbf{z}}\|\mathbb{P}_{\mathbf{c}^\top\mathbf{y}})]\tag{14}\\&+\mathbb{E}_{\mathbf{c}}[\mathcal{L}_{\operatorname{RDMReg}}(\mathbb{P}_{\mathbf{c}^\top\mathbf{z}'}\|\mathbb{P}_{\mathbf{c}^\top\mathbf{y}})]\tag{15}
+\end{align}
+$$
+
+where $$\mathbf{y}\sim\prod_{i=1}^{d}\mathcal{RGN}_{p}(\mu,\sigma)$$ is a Rectified Generalized Gaussian random vector and $$\mathbf{z}=f_{\boldsymbol{\theta}}(\mathbf{x})$$, $$\mathbf{z}'=f_{\boldsymbol{\theta}}(\mathbf{x}')$$ are the neural network features. 
+
+<!-- Following standard self-supervised learning protocol <d-cite key="balestriero2023cookbookselfsupervisedlearning"></d-cite>, we paramterize the neural network as $$\mathbf{z}=f_{\boldsymbol{\theta}}(\mathbf{x})=\operatorname{ReLU}(g_{\boldsymbol{\theta}_2}(g_{\boldsymbol{\theta}_1}(\mathbf{x})))$$ where $$g_{\boldsymbol{\theta}_1}$$ is a backbone like ResNet <d-cite key="he2016deep"></d-cite> or ViT <d-cite key="dosovitskiy2020image"></d-cite> and $$g_{\boldsymbol{\theta}_2}$$ is an additional multilayer perceptron. We note that the additional $$\operatorname{ReLU}(\cdot)$$ is our custom design and it's absolutely essential for the correctness of our method. -->
+
+In standard self-supervised learning protocols <d-cite key="balestriero2023cookbookselfsupervisedlearning"></d-cite>, representations are typically parameterized as $$\mathbf{z} = f_{\boldsymbol{\theta}}(\mathbf{x}) 
+= g_{\boldsymbol{\theta}_2}\bigl(g_{\boldsymbol{\theta}_1}(\mathbf{x})\bigr),$$ where $$g_{\boldsymbol{\theta}_1}$$ denotes a backbone network such as ResNet <d-cite key="he2016deep"></d-cite> or ViT <d-cite key="dosovitskiy2020image"></d-cite>, and $$g_{\boldsymbol{\theta}_2}$$ is an additional multilayer perceptron (MLP).
+
+In contrast, we explicitly introduce an additional rectification at the output and we arrive at: $$\mathbf{z} = f_{\boldsymbol{\theta}}(\mathbf{x})= \operatorname{ReLU}\!\left(g_{\boldsymbol{\theta}_2}\bigl(g_{\boldsymbol{\theta}_1}(\mathbf{x})\bigr)\right).$$ This final $$\operatorname{ReLU}(\cdot)$$ is a deliberate architectural choice and is essential for the correctness of our method. Combining the architectural and objective-level updates, we arrive at **Rectified LpJEPA**.
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.html path="assets/img/final_teasor.png" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
+<div class="caption">
+    Rectified LpJEPA Diagram
+</div>
+
+## Sparsity-Performance Tradeoffs
+
+Finally, we can train our Rectified LpJEPA model. 
 
 
 <!-- ## additional helper
@@ -387,7 +518,7 @@ You just need to surround your math expression with `$$`, like `$$ E = mc^2 $$`.
 Note that MathJax 3 is [a major re-write of MathJax](https://docs.mathjax.org/en/latest/upgrading/whats-new-3.0.html)
 
 
-<d-code block language="javascript">
+<d-code block language="python">
   var x = 25;
   function(x) {
     return x * x;
@@ -428,8 +559,8 @@ Markdown | Less | Pretty
 
 Quote break.
 
-> This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can *put* **Markdown** into a blockquote. -->
-
+> This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can *put* **Markdown** into a blockquote.
+ -->
 
 <!-- Self-supervised learning achieves this by creating another view $\mathbf{x}\'$ of the input $\mathbf{x}$. For images, this could be a cropped, rotated, or even corrupted version of the original image $\mathbf{x}$ which still preserves some information about what $\mathbf{x}$ is. For audio and video, this can just be temporally adjacent clips or frames which are slowly varying and hence semantically related to each other.  -->
 
