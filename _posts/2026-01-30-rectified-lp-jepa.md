@@ -22,6 +22,7 @@ bibliography: 2026-01-30-rectified-lp-jepa.bib
 #   - we may want to automate TOC generation in the future using
 #     jekyll-toc plugin (https://github.com/toshimaru/jekyll-toc).
 toc:
+  - name: Introduction
   - name: Self-Supervised Learning
   - name: Distribution-Matching Regularization
     subsections:
@@ -58,6 +59,18 @@ _styles: >
   }
 
 ---
+
+## Introduction
+
+This post is a companion blog to our paper **Rectified LpJEPA**
+([arXiv:2602.01456](https://arxiv.org/abs/2602.01456)
+<i class="ai ai-arxiv" style="font-size:0.95em;"></i>)
+and its accompanying implementation
+([GitHub](https://github.com/YilunKuang/rectified-lp-jepa)
+<i class="fab fa-github" style="font-size:0.95em;"></i>). The goal is to provide a self-contained walkthrough of the key ideas in a less technical manner.
+
+We begin by reviewing self-supervised learning and the problem of feature collapse, then motivate **distribution-matching regularization** through the **Cramér–Wold theorem** and its instantiation in **SIGReg / LeJEPA** <d-cite key="balestriero2025lejepaprovablescalableselfsupervised"></d-cite>. We progressively refine the choice of target distributions—from isotropic Gaussian to Rectified Generalized Gaussian—to highlight the tradeoff between **maximum-entropy** and **sparsity**. Finally, we introduce **Rectified Distribution Matching Regularization (RDMReg)** and the resulting **Rectified LpJEPA** objective. We conclude with a small set of empirical **sparsity–performance tradeoffs**, intended as a representative snapshot of the broader experimental results presented in the paper.
+
 
 ## Self-Supervised Learning
 
@@ -541,8 +554,19 @@ Finally, we can train our Rectified LpJEPA model. For simplicity, we can conside
     Sparsity-Performance Tradeoffs
 </div>
 
-More experiments can be found in our paper. Overall, Rectified LpJEPA is a new approach to learn sparse representations through distribution matching to the Rectified Generalized Gaussian distributions, and please check out our codebase and paper if you are interested in learning more about it! 
+More experiments and ablation studies can be found in the paper. Overall, **Rectified LpJEPA** provides a principled approach to learning sparse representations through distribution matching to Rectified Generalized Gaussian. If you find this work useful, please consider checking out the paper and codebase and citing our work:
 
+```
+@misc{kuang2026rectifiedlpjepajointembeddingpredictive,
+      title={Rectified LpJEPA: Joint-Embedding Predictive Architectures with Sparse and Maximum-Entropy Representations}, 
+      author={Yilun Kuang and Yash Dagade and Tim G. J. Rudner and Randall Balestriero and Yann LeCun},
+      year={2026},
+      eprint={2602.01456},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2602.01456}, 
+}
+```
 <!-- l0_norm_sparsity_vs_accuracy.png -->
 
 <!-- ## additional helper
