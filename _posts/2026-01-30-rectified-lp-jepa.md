@@ -449,7 +449,7 @@ $$
 
 where $$(\cdot)^{\uparrow}$$ denotes sorting in ascending order. The objective is implemented in the following python code snippet
 
-<d-code block language="python">
+<!-- <d-code block language="python">
 import torch
 
 def rdmreg_loss(z, target_samples, num_projections):
@@ -471,7 +471,31 @@ def rdmreg_loss(z, target_samples, num_projections):
     # 4. Compute and Return the Sliced 2-Wasserstein distance
     return torch.mean((proj_z_sorted - proj_target_sorted)**2)
 
-</d-code>
+</d-code> -->
+
+{% highlight python %}
+import torch
+
+def rdmreg_loss(z, target_samples, num_projections):
+    B, D = z.shape
+    device = z.device
+    
+    # 1. Sample random projections from the unit L2 sphere.
+    projections = torch.randn(num_projections, D, device=device)
+    projections = projections / projections.norm(dim=1, keepdim=True)
+    
+    # 2. Project features and samples from the RGG distribution.
+    proj_z = torch.matmul(z, projections.T)
+    proj_target = torch.matmul(target_samples, projections.T)
+    
+    # 3. Sort along the batch dimension
+    proj_z_sorted, _ = torch.sort(proj_z, dim=0)
+    proj_target_sorted, _ = torch.sort(proj_target, dim=0)
+    
+    # 4. Compute and Return the Sliced 2-Wasserstein distance
+    return torch.mean((proj_z_sorted - proj_target_sorted)**2)
+
+{% endhighlight %}
 
 
 
