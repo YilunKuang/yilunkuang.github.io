@@ -1,6 +1,20 @@
 ---
 ---
 
+@misc{kuang2026rectifiedlpjepajointembeddingpredictive,
+      title={Rectified LpJEPA: Joint-Embedding Predictive Architectures with Sparse and Maximum-Entropy Representations}, 
+      author={Yilun Kuang and Yash Dagade and Tim G. J. Rudner and Randall Balestriero and Yann LeCun},
+      journal = {Preprint},
+      bibtex_show = {true},
+      selected = {true},
+      year={2026},
+      eprint={2602.01456},
+      abstract={Joint-Embedding Predictive Architectures (JEPA) learn view-invariant representations and admit projection-based distribution matching for collapse prevention. Existing approaches regularize representations towards isotropic Gaussian distributions, but inherently favor dense representations and fail to capture the key property of sparsity observed in efficient representations. We introduce Rectified Distribution Matching Regularization (RDMReg), a sliced two-sample distribution-matching loss that aligns representations to a Rectified Generalized Gaussian (RGG) distribution. RGG enables explicit control over expected $\ell_0$ norm through rectification, while preserving maximum-entropy up to rescaling under expected $\ell_p$ norm constraints. Equipping JEPAs with RDMReg yields Rectified LpJEPA, which strictly generalizes prior Gaussian-based JEPAs. Empirically, Rectified LpJEPA learns sparse, non-negative representations with favorable sparsity–performance trade-offs and competitive downstream performance on image classification benchmarks, demonstrating that RDMReg effectively enforces sparsity while preserving task-relevant information.},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      preview={rectified_gaussian_shadow_135.png},
+      html={https://arxiv.org/abs/2602.01456}, 
+}
 
 @article{kuang2025radialvcreg,
     title={Radial-VCReg: More Informative Representation Learning through Radial Gaussianization}, 
@@ -12,7 +26,7 @@
     bibtex_show = {true},
     abstract={Self-supervised learning aims to learn maximally informative representations, but explicit information maximization is hindered by the curse of dimensionality. Existing methods like VCReg address this by regularizing first- and second-order feature statistics, which cannot fully achieve maximum entropy. We propose Radial-VCReg, which augments VCReg with a radial Gaussianization loss that aligns feature norms with the Chi distribution—a defining property of high-dimensional Gaussians. We prove that Radial-VCReg transforms a broader class of distributions toward normality compared to VCReg and show on synthetic and real-world datasets that it consistently improves performance by reducing higher-order dependencies and promoting more diverse and informative representations.},
     preview={radialvcreg.png},
-    html={TODO},
+    html={https://openreview.net/pdf?id=pQ2LZnZDDp},
 }
 
 @article{kuang2025structattn,
