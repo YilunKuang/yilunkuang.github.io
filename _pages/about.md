@@ -20,7 +20,7 @@ social: true  # includes social icons at the bottom of the page
 
 I am Yilun Kuang, a third-year PhD student in Data Science at [NYU CDS](https://cds.nyu.edu/) & [NYU CILVR Lab](https://wp.nyu.edu/cilvr/) advised by Prof. [Yann LeCun](http://yann.lecun.com/). My research interests includes Self-Supervised Learning, World Models, Control and Planning, and Efficient Architectures.
 
-Prior to starting PhD, I graduated magna cum laude with high honors from NYU with a BA in Mathematics. I was fortunate to work with [SueYeon Chung](https://sites.google.com/site/sueyeonchung/) and [Eero Simoncelli](http://www.cns.nyu.edu/~eero/) on manifold geometry/efficient coding inspired self-supervised learning at the [Center for Computational Neuroscience of Flatiron Institute, Simons Foundation](https://www.simonsfoundation.org/people/yilun-kuang/).
+Prior to starting PhD, I graduated from NYU with a BA in Mathematics with high honors. I was fortunate to work with [SueYeon Chung](https://sites.google.com/site/sueyeonchung/) and [Eero Simoncelli](http://www.cns.nyu.edu/~eero/) on manifold geometry/efficient coding inspired self-supervised learning at the [Center for Computational Neuroscience of Flatiron Institute, Simons Foundation](https://www.simonsfoundation.org/people/yilun-kuang/).
 
 <!-- [[CV](https://yilunkuang.github.io/files/cv/YK_PhD_Resume.pdf)] -->
 
