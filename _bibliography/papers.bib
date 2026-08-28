@@ -1,6 +1,21 @@
 ---
 ---
 
+@article{kuang2026lpwmcasesparserepresentations,
+      title={LpWM: A Case for Sparse Representations in World Models}, 
+      author={Yilun Kuang and Yash Dagade and Quentin Le Lidec and Lucas Maes and Randall Balestriero and Yann LeCun},
+      journal = {World Models Workshop at Chicago Booth (WM@Booth), 2026},
+      bibtex_show = {true},
+      selected = {true},
+      year={2026},
+      eprint={2608.22764},
+      abstract={Joint-embedding predictive architectures (JEPAs) learn latent dynamics for planning and avoid representation collapse by matching features to maximum-entropy distributions such as isotropic Gaussians, yielding dense representations. However, it is unclear whether dense representations are the most favorable geometry for modeling dynamics. In this work, we ask whether a different geometry, sparse representations, can make action-conditioned latent dynamics easier to model, and what dynamical structure emerges from such representations. We first show that nonlinear Lipschitz dynamics can be approximated arbitrarily well by action-conditioned linear dynamics in a sufficiently high-dimensional one-hot latent space, with rollout error vanishing as the dimension grows. This motivates distributed sparse representations as a practical relaxation of one-hot sparsity. We introduce LpWorldModel (LpWM), a JEPA model regularized with Rectified Distribution Matching Regularization (RDMReg) to match encoder features to a Rectified Generalized Gaussian distribution, yielding non-negative sparse codes. Empirically, sparsity lowers the predictor complexity required for successful planning: on PushT, sparse LpWM outperforms dense LeWM by up to 57% in planning success at intermediate predictor capacities. This advantage also extends beyond Gaussian distribution matching, with LpWM outperforming dense VICReg representations across multiple predictor families. We further find that the learned sparse representations are mode-factored, with support encoding discrete dynamical regimes and feature magnitudes capturing continuous within-regime state. Together, these results suggest that sparse representations can reduce the predictor complexity required for control while revealing interpretable structure.},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      preview={lpwm_teaser.png},
+      html={https://arxiv.org/abs/2608.22764}, 
+}
+
 @article{kuang2026rectifiedlpjepajointembeddingpredictive,
       title={Rectified LpJEPA: Joint-Embedding Predictive Architectures with Sparse and Maximum-Entropy Representations}, 
       author={Yilun Kuang and Yash Dagade and Tim G. J. Rudner and Randall Balestriero and Yann LeCun},
