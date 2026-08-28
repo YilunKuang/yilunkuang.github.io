@@ -25,3 +25,5 @@ group :other_plugins do
     gem 'feedjira'
     gem 'httparty'
 end
+# Stdlib gems removed from Ruby's default gems in 4.0.0
+gem 'ostruct'
