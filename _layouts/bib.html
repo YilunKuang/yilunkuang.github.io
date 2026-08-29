@@ -146,6 +146,10 @@
                 <span style="color: red; font-weight: bold;"> Spotlight</span>
               {%- endif -%}
               
+              {%- if entry.oral == "true" -%}
+                <span style="color: red; font-weight: bold;"> Oral Presentation</span>
+              {%- endif -%}
+
               {%- if entry.bestpaper == "true" and journal_name contains "ICML Workshop" -%}
                 <span style="color: red; font-weight: bold;"> Best Paper Award</span>
               {%- endif -%}
@@ -177,7 +181,7 @@
               <em>In {{ journal_name }}</em>
               {%- if journal_year != "" -%}, {{ journal_year }}{%- endif -%}
               {%- if entry.oral == "true" -%}
-                <span style="color: red; font-weight: bold;"> Oral</span>
+                <span style="color: red; font-weight: bold;"> Oral Presentation</span>
               {%- endif -%}
               {%- if entry.bestpaper == "true" -%}
                 <span style="color: red; font-weight: bold;"> Best Paper Award</span>
@@ -195,7 +199,7 @@
               <em>{{ school_name }}</em>
               {%- if school_year != "" -%}, {{ school_year }}{%- endif -%}
               {%- if entry.oral == "true" -%}
-                <span style="color: red; font-weight: bold;"> Oral</span>
+                <span style="color: red; font-weight: bold;"> Oral Presentation</span>
               {%- endif -%}
               {%- if entry.bestpaper == "true" -%}
                 <span style="color: red; font-weight: bold;"> Best Paper Award</span>
@@ -213,7 +217,7 @@
               <em>{{ journal_name }}</em>
               {%- if journal_year != "" -%}, {{ journal_year }}{%- endif -%}
               {%- if entry.oral == "true" -%}
-                <span style="color: red; font-weight: bold;"> Oral</span>
+                <span style="color: red; font-weight: bold;"> Oral Presentation</span>
               {%- endif -%}
               {%- if entry.bestpaper == "true" -%}
                 <span style="color: red; font-weight: bold;"> Best Paper Award</span>
